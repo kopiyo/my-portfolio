@@ -196,11 +196,9 @@ function App() {
   })
 
   // ── NAV CLICK HANDLER ────────────────────────────────
-  const handleNavClick = (link) => {
-    const id = link.toLowerCase().replace(/ /g, '-')
-    setVisibleSections(prev => ({ ...prev, [id]: false }))
-    setAnimationKey(prev => prev + 1)
-  }
+  const handleNavClick = () => {
+  setAnimationKey(prev => prev + 1)
+}
 
   return (
     <div style={{ backgroundColor: '#0a0f1e', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
