@@ -28,17 +28,20 @@ function App() {
 
   // ── SCROLL REVEAL ────────────────────────────────────
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          setVisibleSections(prev => ({ ...prev, [entry.target.id]: entry.isIntersecting }))
-        })
-      },
-      { threshold: 0.1 }
-    )
-    document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
-    return () => observer.disconnect()
-  }, [])
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        // Only set to true when visible — never set back to false automatically
+        if (entry.isIntersecting) {
+          setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }))
+        }
+      })
+    },
+    { threshold: 0.1 }
+  )
+  document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
+  return () => observer.disconnect()
+}, [])
 
   // ── SKILLS DATA ──────────────────────────────────────
   const technicalSkills = [
