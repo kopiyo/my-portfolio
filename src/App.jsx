@@ -1,16 +1,16 @@
 // App.jsx — Main portfolio component
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 function App() {
 
-  // ── PROJECTS CAROUSEL STATE ─────────────────────────
+  // ── CAROUSEL STATES ─────────────────────────────────
   const [current, setCurrent] = useState(0)
-
-  // ── ARTICLES CAROUSEL STATE ─────────────────────────
   const [currentArticle, setCurrentArticle] = useState(0)
-
-  // ── WHAT I DO HOVER STATE ───────────────────────────
   const [hoveredCard, setHoveredCard] = useState(null)
+  const [hoveredPub, setHoveredPub] = useState(null)
+  const [hoveredContact, setHoveredContact] = useState(null)
+  const [focusedInput, setFocusedInput] = useState(null)
+  const [visibleSections, setVisibleSections] = useState({})
 
   // Auto-slides projects every 4 seconds
   useEffect(() => {
@@ -26,6 +26,23 @@ function App() {
       setCurrentArticle(prev => (prev + 1) % 3)
     }, 5000)
     return () => clearInterval(timer)
+  }, [])
+
+  // ── SCROLL REVEAL ────────────────────────────────────
+  // Watches each section and marks it visible when scrolled into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }))
+          }
+        })
+      },
+      { threshold: 0.1 } // triggers when 10% of section is visible
+    )
+    document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
+    return () => observer.disconnect()
   }, [])
 
   // ── SKILLS DATA ─────────────────────────────────────
@@ -84,13 +101,10 @@ function App() {
     },
   ]
 
-  // ── WHAT I DO CARDS DATA ─────────────────────────────
+  // ── WHAT I DO CARDS ──────────────────────────────────
   const whatIDoCards = [
     {
-      id: 0,
-      icon: '🤖',
-      title: 'Machine Learning',
-      accent: '#00FFCC',
+      id: 0, icon: '🤖', title: 'Machine Learning', accent: '#00FFCC',
       borderSide: { borderRight: '1px solid #1e2a45', borderBottom: '1px solid #1e2a45' },
       content: (
         <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
@@ -105,10 +119,7 @@ function App() {
       )
     },
     {
-      id: 1,
-      icon: '📊',
-      title: 'Data Analysis & Statistics',
-      accent: '#60a5fa',
+      id: 1, icon: '📊', title: 'Data Analysis & Statistics', accent: '#60a5fa',
       borderSide: { borderBottom: '1px solid #1e2a45' },
       content: (
         <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
@@ -123,10 +134,7 @@ function App() {
       )
     },
     {
-      id: 2,
-      icon: '🏥',
-      title: 'Health Informatics',
-      accent: '#e879f9',
+      id: 2, icon: '🏥', title: 'Health Informatics', accent: '#e879f9',
       borderSide: { borderRight: '1px solid #1e2a45' },
       content: (
         <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
@@ -137,10 +145,7 @@ function App() {
       )
     },
     {
-      id: 3,
-      icon: '🎓',
-      title: 'Teaching & Research',
-      accent: '#00FFCC',
+      id: 3, icon: '🎓', title: 'Teaching & Research', accent: '#00FFCC',
       borderSide: {},
       content: (
         <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
@@ -155,13 +160,50 @@ function App() {
     },
   ]
 
+  // ── CONTACT INFO ─────────────────────────────────────
+  const contactCards = [
+    {
+      id: 'email', label: 'Email', value: 'kopiyodiana@gmail.com', isLink: false,
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <polyline points="22,6 12,13 2,6" stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    {
+      id: 'linkedin', label: 'LinkedIn', value: 'diana-opiyo', href: 'https://www.linkedin.com/in/diana-opiyo-680b98309/', isLink: true,
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+    },
+    {
+      id: 'github', label: 'GitHub', value: 'github.com/kopiyo', href: 'https://github.com/kopiyo', isLink: true,
+      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+    },
+    {
+      id: 'location', label: 'Location', value: 'Allendale, Michigan, USA', isLink: false,
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#00FFCC" strokeWidth="2"/>
+          <circle cx="12" cy="9" r="2.5" stroke="#00FFCC" strokeWidth="2"/>
+        </svg>
+      )
+    },
+  ]
+
+  // ── SCROLL REVEAL STYLE HELPER ───────────────────────
+  const reveal = (id, delay = 0) => ({
+    opacity: visibleSections[id] ? 1 : 0,
+    transform: visibleSections[id] ? 'translateY(0)' : 'translateY(32px)',
+    transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
+  })
+
   return (
     <div style={{ backgroundColor: '#0a0f1e', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
 
-      {/* ── GLOBAL RESPONSIVE STYLES ───────────────────── */}
+      {/* ── GLOBAL STYLES ──────────────────────────────── */}
       <style>{`
         @media (max-width: 768px) {
-          .nav-links { gap: 16px !important; font-size: 0.78rem !important; }
+          .nav-links { gap: 12px !important; font-size: 0.72rem !important; flex-wrap: wrap !important; justify-content: center !important; }
           .hero-section { padding: 100px 24px 40px 24px !important; }
           .hero-text { font-size: 2rem !important; }
           .section-pad { padding: 40px 24px !important; }
@@ -171,13 +213,15 @@ function App() {
           .project-card img { width: 100% !important; height: 200px !important; }
           .project-card-text { width: 100% !important; }
           .contact-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-          .article-card { padding: 24px !important; }
+          .article-card { padding: 24px 20px !important; }
           .what-i-do-card { border-right: none !important; }
         }
         @media (max-width: 480px) {
-          .nav-links { gap: 10px !important; font-size: 0.70rem !important; }
+          .nav-links { font-size: 0.65rem !important; gap: 8px !important; }
           .hero-text { font-size: 1.7rem !important; }
         }
+
+        /* What I Do hover */
         .what-i-do-card {
           transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
           cursor: default;
@@ -187,13 +231,62 @@ function App() {
           background-color: #111e35 !important;
           box-shadow: 0 8px 32px rgba(0,255,204,0.08);
         }
+
+        /* Skill pill hover */
+        .skill-pill {
+          transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+          cursor: default;
+        }
+        .skill-pill:hover {
+          transform: translateY(-2px);
+          color: white !important;
+        }
+
+        /* Publication card hover */
+        .pub-card {
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .pub-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 28px rgba(0,255,204,0.1);
+        }
+
+        /* Contact info card hover */
+        .contact-info-card {
+          transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+          cursor: default;
+        }
+        .contact-info-card:hover {
+          transform: translateY(-3px);
+          border-color: rgba(0,255,204,0.4) !important;
+          box-shadow: 0 6px 20px rgba(0,255,204,0.08);
+        }
+
+        /* Input focus glow */
+        .form-input:focus {
+          border-color: #00FFCC !important;
+          box-shadow: 0 0 0 3px rgba(0,255,204,0.12) !important;
+          outline: none !important;
+        }
+        .form-input {
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Skill pill animation — staggered fade in */
+        @keyframes pillFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .skill-pill-animate {
+          animation: pillFadeIn 0.4s ease forwards;
+          opacity: 0;
+        }
       `}</style>
 
       {/* ── NAVBAR ─────────────────────────────────────── */}
       <nav style={{
         position: 'fixed', top: 0, width: '100%', zIndex: 50,
-        display: 'flex', justifyContent: 'center',
-        alignItems: 'center',
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
         padding: '16px 24px', backgroundColor: '#0a0f1e',
         borderBottom: '1px solid #1e2a45', boxSizing: 'border-box'
       }}>
@@ -204,8 +297,7 @@ function App() {
                 color: i === 0 ? '#00FFCC' : '#cbd5e1',
                 textDecoration: 'none',
                 borderBottom: i === 0 ? '2px solid #00FFCC' : 'none',
-                paddingBottom: '4px',
-                whiteSpace: 'nowrap',
+                paddingBottom: '4px', whiteSpace: 'nowrap',
               }}>
               {link}
             </a>
@@ -215,8 +307,7 @@ function App() {
 
       {/* ── HERO SECTION ─────────────────────────────── */}
       <section id="home" className="hero-section" style={{
-        minHeight: 'auto',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '120px 60px 60px 60px',
       }}>
         <div style={{ maxWidth: '620px', width: '100%' }}>
@@ -249,92 +340,63 @@ function App() {
         </div>
       </section>
 
-      {/* ── WHAT I DO SECTION ────────────────────────── */}
+      {/* ── WHAT I DO ────────────────────────────────── */}
       <section id="what-i-do" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>What I Do</h2>
-        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
-
-        {/* ── 4 cards with hover effect ─────────────── */}
+        <div style={reveal('what-i-do')}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>What I Do</h2>
+          <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
+        </div>
         <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0px', alignItems: 'start' }}>
-          {whatIDoCards.map(card => (
-            <div
-              key={card.id}
-              className="what-i-do-card"
+          {whatIDoCards.map((card, idx) => (
+            <div key={card.id} className="what-i-do-card"
               style={{
-                padding: '28px',
-                backgroundColor: '#0d1526',
-                borderRadius: '4px',
+                padding: '28px', backgroundColor: '#0d1526', borderRadius: '4px',
                 ...card.borderSide,
+                ...reveal('what-i-do', idx * 0.1),
               }}
               onMouseEnter={() => setHoveredCard(card.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              {/* Icon + accent bar */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '42px', height: '42px', borderRadius: '10px',
-                  backgroundColor: `${card.accent}18`,
-                  border: `1px solid ${card.accent}40`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '1.3rem',
+                  backgroundColor: `${card.accent}18`, border: `1px solid ${card.accent}40`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem',
                   transition: 'transform 0.3s ease',
                   transform: hoveredCard === card.id ? 'scale(1.15)' : 'scale(1)',
-                }}>
-                  {card.icon}
-                </div>
+                }}>{card.icon}</div>
                 <h3 style={{
                   color: hoveredCard === card.id ? card.accent : 'white',
                   fontSize: '1.1rem', fontWeight: 'bold', margin: 0,
                   transition: 'color 0.25s ease',
-                }}>
-                  {card.title}
-                </h3>
+                }}>{card.title}</h3>
               </div>
-
-              {/* Animated accent line */}
               <div style={{
-                width: hoveredCard === card.id ? '50px' : '0px',
-                height: '2px',
-                backgroundColor: card.accent,
-                marginBottom: '14px',
-                transition: 'width 0.3s ease',
-                borderRadius: '2px',
+                width: hoveredCard === card.id ? '50px' : '0px', height: '2px',
+                backgroundColor: card.accent, marginBottom: '14px',
+                transition: 'width 0.3s ease', borderRadius: '2px',
               }}></div>
-
               {card.content}
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── MY PROJECTS SECTION ──────────────────────── */}
+      {/* ── MY PROJECTS ──────────────────────────────── */}
       <section id="my-projects" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>My Projects</h2>
-        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
+        <div style={reveal('my-projects')}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>My Projects</h2>
+          <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
+        </div>
 
-        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
-          <div style={{
-            display: 'flex',
-            transition: 'transform 0.6s ease-in-out',
-            transform: `translateX(-${current * 100}%)`,
-          }}>
+        <div style={{ ...reveal('my-projects', 0.15), position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', transition: 'transform 0.6s ease-in-out', transform: `translateX(-${current * 100}%)` }}>
 
-            {/* ── SLIDE 1: Suicidal Ideation ─────────── */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-              <div className="project-card" style={{
-                backgroundColor: '#0d1526', borderRadius: '12px',
-                border: '1px solid #1e2a45', overflow: 'hidden',
-                display: 'flex', alignItems: 'stretch',
-              }}>
+              <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
-                  <span style={{
-                    backgroundColor: 'rgba(0,255,204,0.1)', border: '1px solid rgba(0,255,204,0.3)',
-                    color: '#00FFCC', borderRadius: '999px', padding: '3px 12px',
-                    fontSize: '0.72rem', fontWeight: '600', marginBottom: '14px', display: 'inline-block'
-                  }}>NLP · Deep Learning · Mental Health</span>
-                  <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px', marginTop: '8px' }}>
-                    Suicidal Ideation Detection
-                  </h3>
+                  <span style={{ backgroundColor: 'rgba(0,255,204,0.1)', border: '1px solid rgba(0,255,204,0.3)', color: '#00FFCC', borderRadius: '999px', padding: '3px 12px', fontSize: '0.72rem', fontWeight: '600', marginBottom: '14px', display: 'inline-block' }}>NLP · Deep Learning · Mental Health</span>
+                  <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px', marginTop: '8px' }}>Suicidal Ideation Detection</h3>
                   <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.93rem', marginBottom: '20px' }}>
                     A deep learning system that detects suicidal ideation in social media text using a{' '}
                     <span style={{ color: '#00FFCC', fontWeight: '600' }}>Bi-LSTM model</span> trained on
@@ -347,35 +409,22 @@ function App() {
                       <span key={i} style={{ backgroundColor: '#1e2a45', color: '#94a3b8', borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem' }}>{tech}</span>
                     ))}
                   </div>
-                  <a href="https://suicidal-ideation-detector.streamlit.app/"
-                    target="_blank" rel="noopener noreferrer"
+                  <a href="https://suicidal-ideation-detector.streamlit.app/" target="_blank" rel="noopener noreferrer"
                     style={{ border: '1.5px solid #00FFCC', color: '#00FFCC', padding: '8px 20px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.85rem' }}
                     onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
                     onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
                     View Live App ›
                   </a>
                 </div>
-                <img src="/Suicidal Ideation.jpg" alt="Suicidal Ideation Detection App"
-                  style={{ width: '45%', objectFit: 'cover', display: 'block' }}/>
+                <img src="/Suicidal Ideation.jpg" alt="Suicidal Ideation Detection App" style={{ width: '45%', objectFit: 'cover', display: 'block' }}/>
               </div>
             </div>
 
-            {/* ── SLIDE 2: Heart Disease ────────────── */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-              <div className="project-card" style={{
-                backgroundColor: '#0d1526', borderRadius: '12px',
-                border: '1px solid #1e2a45', overflow: 'hidden',
-                display: 'flex', alignItems: 'stretch',
-              }}>
+              <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
-                  <span style={{
-                    backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
-                    color: '#60a5fa', borderRadius: '999px', padding: '3px 12px',
-                    fontSize: '0.72rem', fontWeight: '600', marginBottom: '14px', display: 'inline-block'
-                  }}>Health Informatics · Machine Learning</span>
-                  <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px', marginTop: '8px' }}>
-                    Heart Disease Risk Predictor
-                  </h3>
+                  <span style={{ backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', color: '#60a5fa', borderRadius: '999px', padding: '3px 12px', fontSize: '0.72rem', fontWeight: '600', marginBottom: '14px', display: 'inline-block' }}>Health Informatics · Machine Learning</span>
+                  <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px', marginTop: '8px' }}>Heart Disease Risk Predictor</h3>
                   <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.93rem', marginBottom: '20px' }}>
                     A machine learning based web app that predicts heart disease risk using a{' '}
                     <span style={{ color: '#60a5fa', fontWeight: '600' }}>Support Vector Classifier</span>{' '}
@@ -388,35 +437,22 @@ function App() {
                       <span key={i} style={{ backgroundColor: '#1e2a45', color: '#94a3b8', borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem' }}>{tech}</span>
                     ))}
                   </div>
-                  <a href="https://heart-disease-risk-predictor-app.streamlit.app/"
-                    target="_blank" rel="noopener noreferrer"
+                  <a href="https://heart-disease-risk-predictor-app.streamlit.app/" target="_blank" rel="noopener noreferrer"
                     style={{ border: '1.5px solid #60a5fa', color: '#60a5fa', padding: '8px 20px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.85rem' }}
                     onMouseEnter={e => { e.target.style.backgroundColor = '#60a5fa'; e.target.style.color = '#000'; }}
                     onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#60a5fa'; }}>
                     View Live App ›
                   </a>
                 </div>
-                <img src="/Heart_Disease.jpg" alt="Heart Disease Risk Predictor"
-                  style={{ width: '45%', objectFit: 'cover', display: 'block' }}/>
+                <img src="/Heart_Disease.jpg" alt="Heart Disease Risk Predictor" style={{ width: '45%', objectFit: 'cover', display: 'block' }}/>
               </div>
             </div>
 
-            {/* ── SLIDE 3: PharmAssist ──────────────── */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-              <div className="project-card" style={{
-                backgroundColor: '#0d1526', borderRadius: '12px',
-                border: '1px solid #1e2a45', overflow: 'hidden',
-                display: 'flex', alignItems: 'stretch',
-              }}>
+              <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
-                  <span style={{
-                    backgroundColor: 'rgba(232,121,249,0.1)', border: '1px solid rgba(232,121,249,0.3)',
-                    color: '#e879f9', borderRadius: '999px', padding: '3px 12px',
-                    fontSize: '0.72rem', fontWeight: '600', marginBottom: '14px', display: 'inline-block'
-                  }}>Pharmacy · Health Informatics · ML Deployment</span>
-                  <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px', marginTop: '8px' }}>
-                    PharmAssist, Medication Management Risk Screener
-                  </h3>
+                  <span style={{ backgroundColor: 'rgba(232,121,249,0.1)', border: '1px solid rgba(232,121,249,0.3)', color: '#e879f9', borderRadius: '999px', padding: '3px 12px', fontSize: '0.72rem', fontWeight: '600', marginBottom: '14px', display: 'inline-block' }}>Pharmacy · Health Informatics · ML Deployment</span>
+                  <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '10px', marginTop: '8px' }}>PharmAssist, Medication Management Risk Screener</h3>
                   <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.93rem', marginBottom: '20px' }}>
                     A clinical risk screener that predicts{' '}
                     <span style={{ color: '#e879f9', fontWeight: '600' }}>medication management difficulty</span>{' '},
@@ -431,99 +467,95 @@ function App() {
                       <span key={i} style={{ backgroundColor: '#1e2a45', color: '#94a3b8', borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem' }}>{tech}</span>
                     ))}
                   </div>
-                  <a href="https://medication-difficulty.streamlit.app/"
-                    target="_blank" rel="noopener noreferrer"
+                  <a href="https://medication-difficulty.streamlit.app/" target="_blank" rel="noopener noreferrer"
                     style={{ border: '1.5px solid #e879f9', color: '#e879f9', padding: '8px 20px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.85rem' }}
                     onMouseEnter={e => { e.target.style.backgroundColor = '#e879f9'; e.target.style.color = '#000'; }}
                     onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#e879f9'; }}>
                     View Live App ›
                   </a>
                 </div>
-                <img src="/PharmAssist.jpg" alt="PharmAssist Medication Risk Screener"
-                  style={{ width: '45%', objectFit: 'cover', display: 'block' }}/>
+                <img src="/PharmAssist.jpg" alt="PharmAssist Medication Risk Screener" style={{ width: '45%', objectFit: 'cover', display: 'block' }}/>
               </div>
             </div>
 
           </div>
 
           <button onClick={() => setCurrent(prev => (prev - 1 + 3) % 3)}
-            style={{
-              position: 'absolute', left: '12px', top: '50%',
-              transform: 'translateY(-50%)',
-              backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45',
-              color: 'white', borderRadius: '50%', width: '40px', height: '40px',
-              fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
-            }}>‹</button>
-
+            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>‹</button>
           <button onClick={() => setCurrent(prev => (prev + 1) % 3)}
-            style={{
-              position: 'absolute', right: '12px', top: '50%',
-              transform: 'translateY(-50%)',
-              backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45',
-              color: 'white', borderRadius: '50%', width: '40px', height: '40px',
-              fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
-            }}>›</button>
+            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>›</button>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
           {[0, 1, 2].map(i => (
             <button key={i} onClick={() => setCurrent(i)}
-              style={{
-                width: i === current ? '24px' : '8px',
-                height: '8px', borderRadius: '999px',
-                backgroundColor: i === current ? '#00FFCC' : '#1e2a45',
-                border: 'none', cursor: 'pointer',
-                transition: 'all 0.3s', padding: 0,
-              }}/>
+              style={{ width: i === current ? '24px' : '8px', height: '8px', borderRadius: '999px', backgroundColor: i === current ? '#00FFCC' : '#1e2a45', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}/>
           ))}
         </div>
       </section>
 
-      {/* ── SKILLS SECTION ───────────────────────────── */}
+      {/* ── SKILLS ───────────────────────────────────── */}
       <section id="skills" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Skill Set</h2>
-        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
+        <div style={reveal('skills')}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Skill Set</h2>
+          <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
+        </div>
 
         <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
 
-          <div style={{ backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
-            <h3 style={{ color: '#00FFCC', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Technical Tools
-            </h3>
+          {/* Technical Tools */}
+          <div style={{ ...reveal('skills', 0.1), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
+            <h3 style={{ color: '#00FFCC', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Technical Tools</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {technicalSkills.map((skill, i) => (
-                <span key={i} style={{
-                  backgroundColor: 'rgba(0,255,204,0.08)', border: '1px solid rgba(0,255,204,0.2)',
-                  color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                }}>{skill}</span>
+                <span key={i} className="skill-pill skill-pill-animate"
+                  style={{
+                    backgroundColor: 'rgba(0,255,204,0.08)', border: '1px solid rgba(0,255,204,0.2)',
+                    color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
+                    animationDelay: visibleSections['skills'] ? `${i * 0.04}s` : '0s',
+                  }}
+                  onMouseEnter={e => { e.target.style.borderColor = '#00FFCC'; e.target.style.color = '#00FFCC'; }}
+                  onMouseLeave={e => { e.target.style.borderColor = 'rgba(0,255,204,0.2)'; e.target.style.color = '#94a3b8'; }}>
+                  {skill}
+                </span>
               ))}
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
-            <h3 style={{ color: '#60a5fa', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Analytical Skills
-            </h3>
+          {/* Analytical Skills */}
+          <div style={{ ...reveal('skills', 0.2), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
+            <h3 style={{ color: '#60a5fa', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Analytical Skills</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {analyticalSkills.map((skill, i) => (
-                <span key={i} style={{
-                  backgroundColor: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
-                  color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                }}>{skill}</span>
+                <span key={i} className="skill-pill skill-pill-animate"
+                  style={{
+                    backgroundColor: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
+                    color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
+                    animationDelay: visibleSections['skills'] ? `${i * 0.06}s` : '0s',
+                  }}
+                  onMouseEnter={e => { e.target.style.borderColor = '#60a5fa'; e.target.style.color = '#60a5fa'; }}
+                  onMouseLeave={e => { e.target.style.borderColor = 'rgba(96,165,250,0.2)'; e.target.style.color = '#94a3b8'; }}>
+                  {skill}
+                </span>
               ))}
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
-            <h3 style={{ color: '#e879f9', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Soft Skills
-            </h3>
+          {/* Soft Skills */}
+          <div style={{ ...reveal('skills', 0.3), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
+            <h3 style={{ color: '#e879f9', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Soft Skills</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {softSkills.map((skill, i) => (
-                <span key={i} style={{
-                  backgroundColor: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.2)',
-                  color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                }}>{skill}</span>
+                <span key={i} className="skill-pill skill-pill-animate"
+                  style={{
+                    backgroundColor: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.2)',
+                    color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
+                    animationDelay: visibleSections['skills'] ? `${i * 0.04}s` : '0s',
+                  }}
+                  onMouseEnter={e => { e.target.style.borderColor = '#e879f9'; e.target.style.color = '#e879f9'; }}
+                  onMouseLeave={e => { e.target.style.borderColor = 'rgba(232,121,249,0.2)'; e.target.style.color = '#94a3b8'; }}>
+                  {skill}
+                </span>
               ))}
             </div>
           </div>
@@ -531,44 +563,29 @@ function App() {
         </div>
       </section>
 
-      {/* ── ARTICLES SECTION ─────────────────────────── */}
+      {/* ── ARTICLES ─────────────────────────────────── */}
       <section id="articles" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Articles</h2>
-        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
-        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
-          Thoughts on machine learning, data science, and research, part of my{' '}
-          <span style={{ color: '#00FFCC', fontWeight: '600' }}>#LRWithDiana</span> series.
-        </p>
+        <div style={reveal('articles')}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Articles</h2>
+          <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
+          <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
+            Thoughts on machine learning, data science, and research, part of my{' '}
+            <span style={{ color: '#00FFCC', fontWeight: '600' }}>#LRWithDiana</span> series.
+          </p>
+        </div>
 
-        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
-          <div style={{
-            display: 'flex',
-            transition: 'transform 0.6s ease-in-out',
-            transform: `translateX(-${currentArticle * 100}%)`,
-          }}>
+        <div style={{ ...reveal('articles', 0.15), position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', transition: 'transform 0.6s ease-in-out', transform: `translateX(-${currentArticle * 100}%)` }}>
             {articles.map((article, i) => (
               <div key={i} style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-                <div className="article-card" style={{
-                  backgroundColor: '#0d1526', borderRadius: '12px',
-                  border: '1px solid #1e2a45', padding: '40px 48px',
-                  display: 'flex', flexDirection: 'column',
-                  minHeight: '220px', justifyContent: 'space-between',
-                }}>
+                <div className="article-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', padding: '40px 48px', display: 'flex', flexDirection: 'column', minHeight: '220px', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
-                      <span style={{
-                        backgroundColor: article.tagBg, border: `1px solid ${article.tagBorder}`,
-                        color: article.tagColor, borderRadius: '999px',
-                        padding: '4px 14px', fontSize: '0.75rem', fontWeight: '600',
-                      }}>{article.tag}</span>
+                      <span style={{ backgroundColor: article.tagBg, border: `1px solid ${article.tagBorder}`, color: article.tagColor, borderRadius: '999px', padding: '4px 14px', fontSize: '0.75rem', fontWeight: '600' }}>{article.tag}</span>
                       <span style={{ color: '#4a5568', fontSize: '0.8rem' }}>{article.date}</span>
                     </div>
-                    <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '14px', lineHeight: 1.5 }}>
-                      {article.title}
-                    </h3>
-                    <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.8', marginBottom: '28px', maxWidth: '75%' }}>
-                      {article.summary}
-                    </p>
+                    <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '14px', lineHeight: 1.5 }}>{article.title}</h3>
+                    <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.8', marginBottom: '28px', maxWidth: '75%' }}>{article.summary}</p>
                   </div>
                   <a href={article.link} target="_blank" rel="noopener noreferrer"
                     style={{ color: article.tagColor, fontSize: '0.88rem', fontWeight: '600', textDecoration: 'none' }}
@@ -580,45 +597,22 @@ function App() {
               </div>
             ))}
           </div>
-
           <button onClick={() => setCurrentArticle(prev => (prev - 1 + 3) % 3)}
-            style={{
-              position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-              backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45',
-              color: 'white', borderRadius: '50%', width: '40px', height: '40px',
-              fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
-            }}>‹</button>
-
+            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>‹</button>
           <button onClick={() => setCurrentArticle(prev => (prev + 1) % 3)}
-            style={{
-              position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-              backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45',
-              color: 'white', borderRadius: '50%', width: '40px', height: '40px',
-              fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
-            }}>›</button>
+            style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>›</button>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
           {[0, 1, 2].map(i => (
             <button key={i} onClick={() => setCurrentArticle(i)}
-              style={{
-                width: i === currentArticle ? '24px' : '8px',
-                height: '8px', borderRadius: '999px',
-                backgroundColor: i === currentArticle ? '#00FFCC' : '#1e2a45',
-                border: 'none', cursor: 'pointer',
-                transition: 'all 0.3s', padding: 0,
-              }}/>
+              style={{ width: i === currentArticle ? '24px' : '8px', height: '8px', borderRadius: '999px', backgroundColor: i === currentArticle ? '#00FFCC' : '#1e2a45', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}/>
           ))}
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <a href="https://medium.com/@kopiyodiana"
-            target="_blank" rel="noopener noreferrer"
-            style={{
-              border: '1.5px solid #00FFCC', color: '#00FFCC',
-              padding: '12px 32px', borderRadius: '999px',
-              textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem',
-            }}
+          <a href="https://medium.com/@kopiyodiana" target="_blank" rel="noopener noreferrer"
+            style={{ border: '1.5px solid #00FFCC', color: '#00FFCC', padding: '12px 32px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' }}
             onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
             onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
             View All on Medium ›
@@ -626,191 +620,136 @@ function App() {
         </div>
       </section>
 
-      {/* ── PUBLICATIONS SECTION ─────────────────────── */}
+      {/* ── PUBLICATIONS ─────────────────────────────── */}
       <section id="publications" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Publications</h2>
-        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
-        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
-          Peer-reviewed research accepted for publication.
-        </p>
+        <div style={reveal('publications')}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Publications</h2>
+          <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
+          <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
+            Peer-reviewed research accepted for publication.
+          </p>
+        </div>
 
-        {/* ── PUBLICATION CARD ─────────────────────── */}
-        <div style={{
+        {/* Accepted paper */}
+        <div className="pub-card" style={{
+          ...reveal('publications', 0.15),
           backgroundColor: '#0a0f1e', borderRadius: '12px',
-          border: '1px solid #1e2a45', padding: '32px',
-          borderLeft: '4px solid #00FFCC',
+          border: '1px solid #1e2a45', padding: '32px', borderLeft: '4px solid #00FFCC',
         }}>
-          {/* Status badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
-            <span style={{
-              backgroundColor: 'rgba(0,255,204,0.12)', border: '1px solid rgba(0,255,204,0.35)',
-              color: '#00FFCC', borderRadius: '999px', padding: '4px 14px',
-              fontSize: '0.72rem', fontWeight: '700', letterSpacing: '0.5px',
-            }}>✓ ACCEPTED</span>
-            <span style={{
-              backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
-              color: '#60a5fa', borderRadius: '999px', padding: '4px 14px',
-              fontSize: '0.72rem', fontWeight: '600',
-            }}>Conference Paper</span>
-            <span style={{
-              backgroundColor: 'rgba(232,121,249,0.1)', border: '1px solid rgba(232,121,249,0.3)',
-              color: '#e879f9', borderRadius: '999px', padding: '4px 14px',
-              fontSize: '0.72rem', fontWeight: '600',
-            }}>Springer Nature</span>
+            <span style={{ backgroundColor: 'rgba(0,255,204,0.12)', border: '1px solid rgba(0,255,204,0.35)', color: '#00FFCC', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '700' }}>✓ ACCEPTED</span>
+            <span style={{ backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', color: '#60a5fa', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '600' }}>Conference Paper</span>
+            <span style={{ backgroundColor: 'rgba(232,121,249,0.1)', border: '1px solid rgba(232,121,249,0.3)', color: '#e879f9', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '600' }}>Springer Nature</span>
           </div>
-
-          {/* Title */}
           <h3 style={{ color: 'white', fontSize: '1.15rem', fontWeight: 'bold', marginBottom: '12px', lineHeight: 1.6 }}>
             Machine Learning-Based Prediction of Heart Disease Using a Merged UCI Dataset and Web Deployment
           </h3>
-
-          {/* Authors */}
           <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px' }}>
             <span style={{ color: '#00FFCC', fontWeight: '600' }}>Diana Opiyo</span>,{' '}
             <span style={{ color: '#00FFCC', fontWeight: '600' }}>Suhila Sawesi</span>
           </p>
-
-          {/* Venue */}
           <p style={{ color: '#60a5fa', fontSize: '0.88rem', marginBottom: '16px' }}>
             Published by Springer Nature · Conference Presentation · Germany · Camera-ready: April 2026
           </p>
-
-          {/* Abstract teaser */}
           <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: '1.8', marginBottom: '20px' }}>
             This paper presents a machine learning pipeline for heart disease prediction trained on a merged UCI dataset.
             The best performing model achieves a{' '}
             <span style={{ color: '#00FFCC', fontWeight: '600' }}>ROC-AUC of 0.9412</span> and is deployed
             as an accessible web application, demonstrating end-to-end ML from data preprocessing to clinical deployment.
           </p>
-
-          {/* Tags row */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {['Machine Learning', 'Heart Disease', 'UCI Dataset', 'Web Deployment', 'Springer Nature', 'Health Informatics'].map((tag, i) => (
-              <span key={i} style={{
-                backgroundColor: '#1e2a45', color: '#94a3b8',
-                borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem',
-              }}>{tag}</span>
+              <span key={i} style={{ backgroundColor: '#1e2a45', color: '#94a3b8', borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem' }}>{tag}</span>
             ))}
           </div>
         </div>
 
-        {/* ── IN PROGRESS ──────────────────────────── */}
-        <div style={{ marginTop: '20px', backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px', borderLeft: '4px solid #4a5568' }}>
+        {/* In progress paper */}
+        <div className="pub-card" style={{
+          ...reveal('publications', 0.25),
+          marginTop: '20px', backgroundColor: '#0a0f1e', borderRadius: '12px',
+          border: '1px solid #1e2a45', padding: '28px', borderLeft: '4px solid #4a5568',
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
-            <span style={{
-              backgroundColor: 'rgba(74,85,104,0.2)', border: '1px solid rgba(74,85,104,0.4)',
-              color: '#94a3b8', borderRadius: '999px', padding: '4px 14px',
-              fontSize: '0.72rem', fontWeight: '700',
-            }}>IN PROGRESS</span>
-            <span style={{
-              backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
-              color: '#60a5fa', borderRadius: '999px', padding: '4px 14px',
-              fontSize: '0.72rem', fontWeight: '600',
-            }}>Journal Manuscript</span>
-            {/* Authors */}
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px' }}>
-            <span style={{ color: '#00FFCC', fontWeight: '600' }}>Diana Opiyo</span>,{' '}
-            <span style={{ color: '#00FFCC', fontWeight: '600' }}>Suhila Sawesi</span>
-          </p>
+            <span style={{ backgroundColor: 'rgba(74,85,104,0.2)', border: '1px solid rgba(74,85,104,0.4)', color: '#94a3b8', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '700' }}>IN PROGRESS</span>
+            <span style={{ backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', color: '#60a5fa', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '600' }}>Journal Manuscript</span>
           </div>
           <h3 style={{ color: '#94a3b8', fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '10px', lineHeight: 1.6 }}>
             Predicting Perceived Medication Management Difficulty as an Early Indicator of Non-Adherence Risk
           </h3>
-          <p style={{ color: '#4a5568', fontSize: '0.88rem', marginBottom: '0' }}>
+          {/* Description paragraph */}
+          <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: '1.8', marginBottom: '12px' }}>
+            This study investigates whether perceived medication management difficulty can serve as an
+            early warning signal for medication non-adherence. Using the 2021 NCSME Survey (N=1,521),
+            we develop a Logistic Regression model with 19 predictors spanning medication complexity,
+            financial barriers, social support, and demographics — enabling clinicians to identify
+            at-risk patients before non-adherence occurs.
+          </p>
+          <p style={{ color: '#4a5568', fontSize: '0.85rem', marginBottom: '0' }}>
             In collaboration with Dr. Suhila Sawesi · NCSME Dataset (N=1,521) · Manuscript in preparation
           </p>
         </div>
-
       </section>
 
-      {/* ── CONTACT ME SECTION ───────────────────────── */}
+      {/* ── CONTACT ME ───────────────────────────────── */}
       <section id="contact-me" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Contact Me</h2>
-        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
-        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '40px' }}>
-          Projects, collaborations, research, or just to say hi, I am all for it 😊
-        </p>
+        <div style={reveal('contact-me')}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Contact Me</h2>
+          <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
+          <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '40px' }}>
+            Projects, collaborations, research, or just to say hi, I am all for it 😊
+          </p>
+        </div>
 
         <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
 
-          <div>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Name</label>
-              <input type="text" placeholder="Your name"
-                style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}/>
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Email</label>
-              <input type="email" placeholder="Enter your email"
-                style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}/>
-            </div>
+          {/* Form */}
+          <div style={reveal('contact-me', 0.1)}>
+            {[
+              { label: 'Name', type: 'text', placeholder: 'Your name', id: 'name' },
+              { label: 'Email', type: 'email', placeholder: 'Enter your email', id: 'email' },
+            ].map(field => (
+              <div key={field.id} style={{ marginBottom: '20px' }}>
+                <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>{field.label}</label>
+                <input type={field.type} placeholder={field.placeholder} className="form-input"
+                  style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}/>
+              </div>
+            ))}
             <div style={{ marginBottom: '24px' }}>
               <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Message</label>
-              <textarea placeholder="Your message..." rows={5}
+              <textarea placeholder="Your message..." rows={5} className="form-input"
                 style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}/>
             </div>
-            <button style={{
-              width: '100%', padding: '13px', backgroundColor: 'transparent',
-              border: '1.5px solid #00FFCC', color: '#00FFCC',
-              borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer',
-            }}
+            <button style={{ width: '100%', padding: '13px', backgroundColor: 'transparent', border: '1.5px solid #00FFCC', color: '#00FFCC', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer' }}
               onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
               onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
               Send Message
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <polyline points="22,6 12,13 2,6" stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>Email</div>
-                <div style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500' }}>kopiyodiana@gmail.com</div>
+          {/* Contact info cards */}
+          <div style={{ ...reveal('contact-me', 0.2), display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {contactCards.map((card, idx) => (
+              <div key={card.id} className="contact-info-card"
+                style={{
+                  backgroundColor: '#0d1526', borderRadius: '10px',
+                  border: '1px solid #1e2a45', padding: '18px 24px',
+                  display: 'flex', alignItems: 'center', gap: '16px',
+                  animationDelay: `${idx * 0.08}s`,
+                }}>
+                {card.icon}
+                <div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>{card.label}</div>
+                  {card.isLink
+                    ? <a href={card.href} target="_blank" rel="noopener noreferrer"
+                        style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>
+                        {card.value}
+                      </a>
+                    : <div style={{ color: card.id === 'location' ? 'white' : '#00FFCC', fontSize: '0.9rem', fontWeight: '500' }}>{card.value}</div>
+                  }
+                </div>
               </div>
-            </div>
-
-            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#0A66C2">
-                <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
-                <circle cx="4" cy="4" r="2"/>
-              </svg>
-              <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>LinkedIn</div>
-                <a href="https://www.linkedin.com/in/diana-opiyo-680b98309/" target="_blank" rel="noopener noreferrer"
-                  style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>
-                  diana-opiyo
-                </a>
-              </div>
-            </div>
-
-            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-              </svg>
-              <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>GitHub</div>
-                <a href="https://github.com/kopiyo" target="_blank" rel="noopener noreferrer"
-                  style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>
-                  github.com/kopiyo
-                </a>
-              </div>
-            </div>
-
-            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#00FFCC" strokeWidth="2"/>
-                <circle cx="12" cy="9" r="2.5" stroke="#00FFCC" strokeWidth="2"/>
-              </svg>
-              <div>
-                <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>Location</div>
-                <div style={{ color: 'white', fontSize: '0.9rem', fontWeight: '500' }}>Allendale, Michigan, USA</div>
-              </div>
-            </div>
-
+            ))}
           </div>
         </div>
 
