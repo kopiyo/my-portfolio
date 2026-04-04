@@ -9,6 +9,9 @@ function App() {
   // ── ARTICLES CAROUSEL STATE ─────────────────────────
   const [currentArticle, setCurrentArticle] = useState(0)
 
+  // ── WHAT I DO HOVER STATE ───────────────────────────
+  const [hoveredCard, setHoveredCard] = useState(null)
+
   // Auto-slides projects every 4 seconds
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,7 +53,6 @@ function App() {
   // ── ARTICLES DATA ────────────────────────────────────
   const articles = [
     {
-      // ← Real published Medium article
       tag: 'NLP · Data Science',
       tagColor: '#00FFCC',
       tagBg: 'rgba(0,255,204,0.1)',
@@ -61,7 +63,6 @@ function App() {
       link: 'https://medium.com/@kopiyodiana/what-is-natural-language-processing-nlp-a868586804f5',
     },
     {
-      // ← Coming soon — placeholder
       tag: 'Machine Learning',
       tagColor: '#e879f9',
       tagBg: 'rgba(232,121,249,0.1)',
@@ -72,7 +73,6 @@ function App() {
       link: 'https://medium.com/@kopiyodiana',
     },
     {
-      // ← Coming soon — placeholder
       tag: 'Deep Learning',
       tagColor: '#60a5fa',
       tagBg: 'rgba(96,165,250,0.1)',
@@ -84,25 +84,128 @@ function App() {
     },
   ]
 
+  // ── WHAT I DO CARDS DATA ─────────────────────────────
+  const whatIDoCards = [
+    {
+      id: 0,
+      icon: '🤖',
+      title: 'Machine Learning',
+      accent: '#00FFCC',
+      borderSide: { borderRight: '1px solid #1e2a45', borderBottom: '1px solid #1e2a45' },
+      content: (
+        <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
+          I build well-tuned and accurate machine learning models, like{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>classification</span>,{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>CNN</span>,{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>regression</span>, and{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>deep learning</span>{' '}
+          techniques to uncover patterns in complex data. I build models that go beyond accuracy and into{' '}
+          <span style={{ color: '#e879f9', fontWeight: '600' }}>real-world deployment</span>.
+        </p>
+      )
+    },
+    {
+      id: 1,
+      icon: '📊',
+      title: 'Data Analysis & Statistics',
+      accent: '#60a5fa',
+      borderSide: { borderBottom: '1px solid #1e2a45' },
+      content: (
+        <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
+          With a strong foundation in{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>applied statistics</span>{' '}
+          and mathematics, I go beyond running numbers, I extract the{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>story behind the data</span>.
+          Using Python, R, SQL, Tableau, Excel, and Power BI, I conduct exploratory analysis,
+          sentiment analysis, topic modeling, and engagement analytics that shape{' '}
+          <span style={{ color: '#e879f9', fontWeight: '600' }}>actual decisions</span>.
+        </p>
+      )
+    },
+    {
+      id: 2,
+      icon: '🏥',
+      title: 'Health Informatics',
+      accent: '#e879f9',
+      borderSide: { borderRight: '1px solid #1e2a45' },
+      content: (
+        <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
+          I build Machine Learning-powered tools designed for clinical use. I care about building tools that are not just
+          accurate, but{' '}
+          <span style={{ color: '#e879f9', fontWeight: '600' }}>accessible to the people who need them most</span>.
+        </p>
+      )
+    },
+    {
+      id: 3,
+      icon: '🎓',
+      title: 'Teaching & Research',
+      accent: '#00FFCC',
+      borderSide: {},
+      content: (
+        <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
+          As a Statistics, Computer Science, and Mathematics Instructor at{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>Technical University of Mombasa</span>,
+          I translate complex concepts into clear and practical understanding. My research spans{' '}
+          <span style={{ color: '#00FFCC', fontWeight: '600' }}>
+            Natural Language Processing, Mental Health, Health, and Learning Analytics in K-12 schools.
+          </span>
+        </p>
+      )
+    },
+  ]
+
   return (
     <div style={{ backgroundColor: '#0a0f1e', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+
+      {/* ── GLOBAL RESPONSIVE STYLES ───────────────────── */}
+      <style>{`
+        @media (max-width: 768px) {
+          .nav-links { gap: 16px !important; font-size: 0.78rem !important; }
+          .hero-section { padding: 100px 24px 40px 24px !important; }
+          .hero-text { font-size: 2rem !important; }
+          .section-pad { padding: 40px 24px !important; }
+          .grid-2 { grid-template-columns: 1fr !important; }
+          .grid-3 { grid-template-columns: 1fr !important; }
+          .project-card { flex-direction: column !important; }
+          .project-card img { width: 100% !important; height: 200px !important; }
+          .project-card-text { width: 100% !important; }
+          .contact-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .article-card { padding: 24px !important; }
+          .what-i-do-card { border-right: none !important; }
+        }
+        @media (max-width: 480px) {
+          .nav-links { gap: 10px !important; font-size: 0.70rem !important; }
+          .hero-text { font-size: 1.7rem !important; }
+        }
+        .what-i-do-card {
+          transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+          cursor: default;
+        }
+        .what-i-do-card:hover {
+          transform: translateY(-4px);
+          background-color: #111e35 !important;
+          box-shadow: 0 8px 32px rgba(0,255,204,0.08);
+        }
+      `}</style>
 
       {/* ── NAVBAR ─────────────────────────────────────── */}
       <nav style={{
         position: 'fixed', top: 0, width: '100%', zIndex: 50,
         display: 'flex', justifyContent: 'center',
-        alignItems: 'center', gap: '48px',
-        padding: '20px 60px', backgroundColor: '#0a0f1e',
+        alignItems: 'center',
+        padding: '16px 24px', backgroundColor: '#0a0f1e',
         borderBottom: '1px solid #1e2a45', boxSizing: 'border-box'
       }}>
-        <div style={{ display: 'flex', gap: '32px', fontSize: '0.9rem' }}>
-          {['Home', 'What I Do', 'My Projects', 'Skills', 'Articles', 'Contact Me'].map((link, i) => (
+        <div className="nav-links" style={{ display: 'flex', gap: '32px', fontSize: '0.9rem' }}>
+          {['Home', 'What I Do', 'My Projects', 'Skills', 'Articles', 'Publications', 'Contact Me'].map((link, i) => (
             <a key={i} href={`#${link.toLowerCase().replace(/ /g, '-')}`}
               style={{
                 color: i === 0 ? '#00FFCC' : '#cbd5e1',
                 textDecoration: 'none',
                 borderBottom: i === 0 ? '2px solid #00FFCC' : 'none',
-                paddingBottom: '4px'
+                paddingBottom: '4px',
+                whiteSpace: 'nowrap',
               }}>
               {link}
             </a>
@@ -111,13 +214,13 @@ function App() {
       </nav>
 
       {/* ── HERO SECTION ─────────────────────────────── */}
-      <section id="home" style={{
+      <section id="home" className="hero-section" style={{
         minHeight: 'auto',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '120px 60px 60px 60px',
       }}>
-        <div style={{ maxWidth: '620px' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00FFCC', margin: '0 0 10px 0', lineHeight: 1.1 }}>
+        <div style={{ maxWidth: '620px', width: '100%' }}>
+          <h1 className="hero-text" style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00FFCC', margin: '0 0 10px 0', lineHeight: 1.1 }}>
             Diana Opiyo
           </h1>
           <p style={{ color: '#60a5fa', fontSize: '1.05rem', marginBottom: '16px', fontWeight: '500' }}>
@@ -147,63 +250,65 @@ function App() {
       </section>
 
       {/* ── WHAT I DO SECTION ────────────────────────── */}
-      <section id="what-i-do" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
+      <section id="what-i-do" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>What I Do</h2>
         <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0px', alignItems: 'start' }}>
 
-          <div style={{ padding: '28px 28px 20px 28px', borderRight: '1px solid #1e2a45', borderBottom: '1px solid #1e2a45' }}>
-            <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '12px' }}>Machine Learning</h3>
-            <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
-              I build well-tuned and accurate machine learning models, like{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>classification</span>,{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>CNN</span>,{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>regression</span>, and{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>deep learning</span>{' '}
-              techniques to uncover patterns in complex data. I build models that go beyond accuracy and into{' '}
-              <span style={{ color: '#e879f9', fontWeight: '600' }}>real-world deployment</span>.
-            </p>
-          </div>
+        {/* ── 4 cards with hover effect ─────────────── */}
+        <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0px', alignItems: 'start' }}>
+          {whatIDoCards.map(card => (
+            <div
+              key={card.id}
+              className="what-i-do-card"
+              style={{
+                padding: '28px',
+                backgroundColor: '#0d1526',
+                borderRadius: '4px',
+                ...card.borderSide,
+              }}
+              onMouseEnter={() => setHoveredCard(card.id)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              {/* Icon + accent bar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                <div style={{
+                  width: '42px', height: '42px', borderRadius: '10px',
+                  backgroundColor: `${card.accent}18`,
+                  border: `1px solid ${card.accent}40`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '1.3rem',
+                  transition: 'transform 0.3s ease',
+                  transform: hoveredCard === card.id ? 'scale(1.15)' : 'scale(1)',
+                }}>
+                  {card.icon}
+                </div>
+                <h3 style={{
+                  color: hoveredCard === card.id ? card.accent : 'white',
+                  fontSize: '1.1rem', fontWeight: 'bold', margin: 0,
+                  transition: 'color 0.25s ease',
+                }}>
+                  {card.title}
+                </h3>
+              </div>
 
-          <div style={{ padding: '36px 36px 20px 36px', borderBottom: '1px solid #1e2a45' }}>
-            <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '12px' }}>Data Analysis & Statistics</h3>
-            <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
-              With a strong foundation in{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>applied statistics</span>{' '}
-              and mathematics, I go beyond running numbers, I extract the{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>story behind the data</span>.
-              Using Python, R, SQL, Tableau, Excel, and Power BI, I conduct exploratory analysis,
-              sentiment analysis, topic modeling, and engagement analytics that shape{' '}
-              <span style={{ color: '#e879f9', fontWeight: '600' }}>actual decisions</span>.
-            </p>
-          </div>
+              {/* Animated accent line */}
+              <div style={{
+                width: hoveredCard === card.id ? '50px' : '0px',
+                height: '2px',
+                backgroundColor: card.accent,
+                marginBottom: '14px',
+                transition: 'width 0.3s ease',
+                borderRadius: '2px',
+              }}></div>
 
-          <div style={{ padding: '28px', borderRight: '1px solid #1e2a45' }}>
-            <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '12px' }}>Health Informatics</h3>
-            <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
-              I build Machine Learning-powered tools designed for clinical use. I care about building tools that are not just
-              accurate, but{' '}
-              <span style={{ color: '#e879f9', fontWeight: '600' }}>accessible to the people who need them most</span>.
-            </p>
-          </div>
-
-          <div style={{ padding: '28px' }}>
-            <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '12px' }}>Teaching & Research</h3>
-            <p style={{ color: '#94a3b8', lineHeight: '1.8', fontSize: '0.95rem', margin: 0, textAlign: 'justify' }}>
-              As a Statistics, Computer Science, and Mathematics Instructor at{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>Technical University of Mombasa</span>,
-              I translate complex concepts into clear and practical understanding. My research spans{' '}
-              <span style={{ color: '#00FFCC', fontWeight: '600' }}>
-                Natural Language Processing, Mental Health, Health, and Learning Analytics in K-12 schools.
-              </span>
-            </p>
-          </div>
-
+              {card.content}
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ── MY PROJECTS SECTION ──────────────────────── */}
-      <section id="my-projects" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
+      <section id="my-projects" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>My Projects</h2>
         <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
 
@@ -216,12 +321,12 @@ function App() {
 
             {/* ── SLIDE 1: Suicidal Ideation ─────────── */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-              <div style={{
+              <div className="project-card" style={{
                 backgroundColor: '#0d1526', borderRadius: '12px',
                 border: '1px solid #1e2a45', overflow: 'hidden',
                 display: 'flex', alignItems: 'stretch',
               }}>
-                <div style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
+                <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
                   <span style={{
                     backgroundColor: 'rgba(0,255,204,0.1)', border: '1px solid rgba(0,255,204,0.3)',
                     color: '#00FFCC', borderRadius: '999px', padding: '3px 12px',
@@ -257,12 +362,12 @@ function App() {
 
             {/* ── SLIDE 2: Heart Disease ────────────── */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-              <div style={{
+              <div className="project-card" style={{
                 backgroundColor: '#0d1526', borderRadius: '12px',
                 border: '1px solid #1e2a45', overflow: 'hidden',
                 display: 'flex', alignItems: 'stretch',
               }}>
-                <div style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
+                <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
                   <span style={{
                     backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
                     color: '#60a5fa', borderRadius: '999px', padding: '3px 12px',
@@ -298,12 +403,12 @@ function App() {
 
             {/* ── SLIDE 3: PharmAssist ──────────────── */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-              <div style={{
+              <div className="project-card" style={{
                 backgroundColor: '#0d1526', borderRadius: '12px',
                 border: '1px solid #1e2a45', overflow: 'hidden',
                 display: 'flex', alignItems: 'stretch',
               }}>
-                <div style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
+                <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
                   <span style={{
                     backgroundColor: 'rgba(232,121,249,0.1)', border: '1px solid rgba(232,121,249,0.3)',
                     color: '#e879f9', borderRadius: '999px', padding: '3px 12px',
@@ -341,7 +446,6 @@ function App() {
 
           </div>
 
-          {/* ── PREV ARROW ─────────────────────────── */}
           <button onClick={() => setCurrent(prev => (prev - 1 + 3) % 3)}
             style={{
               position: 'absolute', left: '12px', top: '50%',
@@ -351,7 +455,6 @@ function App() {
               fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
             }}>‹</button>
 
-          {/* ── NEXT ARROW ─────────────────────────── */}
           <button onClick={() => setCurrent(prev => (prev + 1) % 3)}
             style={{
               position: 'absolute', right: '12px', top: '50%',
@@ -362,7 +465,6 @@ function App() {
             }}>›</button>
         </div>
 
-        {/* ── PROJECT DOT INDICATORS ─────────────────── */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
           {[0, 1, 2].map(i => (
             <button key={i} onClick={() => setCurrent(i)}
@@ -375,15 +477,14 @@ function App() {
               }}/>
           ))}
         </div>
-
       </section>
 
       {/* ── SKILLS SECTION ───────────────────────────── */}
-      <section id="skills" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
+      <section id="skills" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Skill Set</h2>
         <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+        <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
 
           <div style={{ backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
             <h3 style={{ color: '#00FFCC', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -431,7 +532,7 @@ function App() {
       </section>
 
       {/* ── ARTICLES SECTION ─────────────────────────── */}
-      <section id="articles" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
+      <section id="articles" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Articles</h2>
         <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
         <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
@@ -439,28 +540,22 @@ function App() {
           <span style={{ color: '#00FFCC', fontWeight: '600' }}>#LRWithDiana</span> series.
         </p>
 
-        {/* ── ARTICLES CAROUSEL WRAPPER ─────────────── */}
         <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
-
-          {/* ── ARTICLES SLIDES TRACK ─────────────────── */}
           <div style={{
             display: 'flex',
             transition: 'transform 0.6s ease-in-out',
             transform: `translateX(-${currentArticle * 100}%)`,
           }}>
-
-            {/* Each article is its own full-width slide */}
             {articles.map((article, i) => (
               <div key={i} style={{ minWidth: '100%', boxSizing: 'border-box' }}>
-                <div style={{
+                <div className="article-card" style={{
                   backgroundColor: '#0d1526', borderRadius: '12px',
                   border: '1px solid #1e2a45', padding: '40px 48px',
                   display: 'flex', flexDirection: 'column',
                   minHeight: '220px', justifyContent: 'space-between',
                 }}>
-                  {/* Top: tag + date */}
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
                       <span style={{
                         backgroundColor: article.tagBg, border: `1px solid ${article.tagBorder}`,
                         color: article.tagColor, borderRadius: '999px',
@@ -468,24 +563,15 @@ function App() {
                       }}>{article.tag}</span>
                       <span style={{ color: '#4a5568', fontSize: '0.8rem' }}>{article.date}</span>
                     </div>
-
-                    {/* Title */}
                     <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '14px', lineHeight: 1.5 }}>
                       {article.title}
                     </h3>
-
-                    {/* Summary */}
                     <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.8', marginBottom: '28px', maxWidth: '75%' }}>
                       {article.summary}
                     </p>
                   </div>
-
-                  {/* Read link */}
                   <a href={article.link} target="_blank" rel="noopener noreferrer"
-                    style={{
-                      color: article.tagColor, fontSize: '0.88rem',
-                      fontWeight: '600', textDecoration: 'none',
-                    }}
+                    style={{ color: article.tagColor, fontSize: '0.88rem', fontWeight: '600', textDecoration: 'none' }}
                     onMouseEnter={e => { e.target.style.opacity = '0.7'; }}
                     onMouseLeave={e => { e.target.style.opacity = '1'; }}>
                     Read Article ›
@@ -493,32 +579,25 @@ function App() {
                 </div>
               </div>
             ))}
-
           </div>
 
-          {/* ── ARTICLES PREV ARROW ───────────────────── */}
           <button onClick={() => setCurrentArticle(prev => (prev - 1 + 3) % 3)}
             style={{
-              position: 'absolute', left: '12px', top: '50%',
-              transform: 'translateY(-50%)',
+              position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
               backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45',
               color: 'white', borderRadius: '50%', width: '40px', height: '40px',
               fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
             }}>‹</button>
 
-          {/* ── ARTICLES NEXT ARROW ───────────────────── */}
           <button onClick={() => setCurrentArticle(prev => (prev + 1) % 3)}
             style={{
-              position: 'absolute', right: '12px', top: '50%',
-              transform: 'translateY(-50%)',
+              position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
               backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45',
               color: 'white', borderRadius: '50%', width: '40px', height: '40px',
               fontSize: '1.1rem', cursor: 'pointer', zIndex: 10,
             }}>›</button>
-
         </div>
 
-        {/* ── ARTICLES DOT INDICATORS ───────────────── */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
           {[0, 1, 2].map(i => (
             <button key={i} onClick={() => setCurrentArticle(i)}
@@ -532,9 +611,8 @@ function App() {
           ))}
         </div>
 
-        {/* View all button */}
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <a href="https://www.linkedin.com/in/diana-opiyo-680b98309/"
+          <a href="https://medium.com/@kopiyodiana"
             target="_blank" rel="noopener noreferrer"
             style={{
               border: '1.5px solid #00FFCC', color: '#00FFCC',
@@ -543,60 +621,133 @@ function App() {
             }}
             onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
             onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
-            View All on LinkedIn ›
+            View All on Medium ›
           </a>
+        </div>
+      </section>
+
+      {/* ── PUBLICATIONS SECTION ─────────────────────── */}
+      <section id="publications" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
+        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Publications</h2>
+        <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
+        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
+          Peer-reviewed research accepted for publication.
+        </p>
+
+        {/* ── PUBLICATION CARD ─────────────────────── */}
+        <div style={{
+          backgroundColor: '#0a0f1e', borderRadius: '12px',
+          border: '1px solid #1e2a45', padding: '32px',
+          borderLeft: '4px solid #00FFCC',
+        }}>
+          {/* Status badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <span style={{
+              backgroundColor: 'rgba(0,255,204,0.12)', border: '1px solid rgba(0,255,204,0.35)',
+              color: '#00FFCC', borderRadius: '999px', padding: '4px 14px',
+              fontSize: '0.72rem', fontWeight: '700', letterSpacing: '0.5px',
+            }}>✓ ACCEPTED</span>
+            <span style={{
+              backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
+              color: '#60a5fa', borderRadius: '999px', padding: '4px 14px',
+              fontSize: '0.72rem', fontWeight: '600',
+            }}>Conference Paper</span>
+            <span style={{
+              backgroundColor: 'rgba(232,121,249,0.1)', border: '1px solid rgba(232,121,249,0.3)',
+              color: '#e879f9', borderRadius: '999px', padding: '4px 14px',
+              fontSize: '0.72rem', fontWeight: '600',
+            }}>Springer Nature</span>
+          </div>
+
+          {/* Title */}
+          <h3 style={{ color: 'white', fontSize: '1.15rem', fontWeight: 'bold', marginBottom: '12px', lineHeight: 1.6 }}>
+            Machine Learning-Based Prediction of Heart Disease Using a Merged UCI Dataset and Web Deployment
+          </h3>
+
+          {/* Authors */}
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px' }}>
+            <span style={{ color: '#00FFCC', fontWeight: '600' }}>Diana Opiyo</span>,{' '}
+            Professor Abeer Alsadoon, Dr. Suhila Sawesi
+          </p>
+
+          {/* Venue */}
+          <p style={{ color: '#60a5fa', fontSize: '0.88rem', marginBottom: '16px' }}>
+            Published by Springer Nature · Conference Presentation · Germany · Camera-ready: April 2026
+          </p>
+
+          {/* Abstract teaser */}
+          <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: '1.8', marginBottom: '20px' }}>
+            This paper presents a machine learning pipeline for heart disease prediction trained on a merged UCI dataset.
+            The best performing model achieves a{' '}
+            <span style={{ color: '#00FFCC', fontWeight: '600' }}>ROC-AUC of 0.9412</span> and is deployed
+            as an accessible web application, demonstrating end-to-end ML from data preprocessing to clinical deployment.
+          </p>
+
+          {/* Tags row */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {['Machine Learning', 'Heart Disease', 'UCI Dataset', 'Web Deployment', 'Springer Nature', 'Health Informatics'].map((tag, i) => (
+              <span key={i} style={{
+                backgroundColor: '#1e2a45', color: '#94a3b8',
+                borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem',
+              }}>{tag}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* ── IN PROGRESS ──────────────────────────── */}
+        <div style={{ marginTop: '20px', backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px', borderLeft: '4px solid #4a5568' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
+            <span style={{
+              backgroundColor: 'rgba(74,85,104,0.2)', border: '1px solid rgba(74,85,104,0.4)',
+              color: '#94a3b8', borderRadius: '999px', padding: '4px 14px',
+              fontSize: '0.72rem', fontWeight: '700',
+            }}>IN PROGRESS</span>
+            <span style={{
+              backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
+              color: '#60a5fa', borderRadius: '999px', padding: '4px 14px',
+              fontSize: '0.72rem', fontWeight: '600',
+            }}>Journal Manuscript</span>
+          </div>
+          <h3 style={{ color: '#94a3b8', fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '10px', lineHeight: 1.6 }}>
+            Predicting Perceived Medication Management Difficulty as an Early Indicator of Non-Adherence Risk
+          </h3>
+          <p style={{ color: '#4a5568', fontSize: '0.88rem', marginBottom: '0' }}>
+            In collaboration with Dr. Suhila Sawesi · NCSME Dataset (N=1,521) · Manuscript in preparation
+          </p>
         </div>
 
       </section>
 
       {/* ── CONTACT ME SECTION ───────────────────────── */}
-      <section id="contact-me" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
+      <section id="contact-me" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Contact Me</h2>
         <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
         <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '40px' }}>
           Projects, collaborations, research, or just to say hi, I am all for it 😊
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
+        <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
 
-          {/* ── LEFT: Contact Form ────────────────────── */}
           <div>
             <div style={{ marginBottom: '20px' }}>
               <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Name</label>
               <input type="text" placeholder="Your name"
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  backgroundColor: '#0a0f1e', border: '1px solid #1e2a45',
-                  borderRadius: '8px', color: 'white', fontSize: '0.9rem',
-                  outline: 'none', boxSizing: 'border-box',
-                }}/>
+                style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}/>
             </div>
             <div style={{ marginBottom: '20px' }}>
               <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Email</label>
               <input type="email" placeholder="Enter your email"
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  backgroundColor: '#0a0f1e', border: '1px solid #1e2a45',
-                  borderRadius: '8px', color: 'white', fontSize: '0.9rem',
-                  outline: 'none', boxSizing: 'border-box',
-                }}/>
+                style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}/>
             </div>
             <div style={{ marginBottom: '24px' }}>
               <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Message</label>
               <textarea placeholder="Your message..." rows={5}
-                style={{
-                  width: '100%', padding: '12px 16px',
-                  backgroundColor: '#0a0f1e', border: '1px solid #1e2a45',
-                  borderRadius: '8px', color: 'white', fontSize: '0.9rem',
-                  outline: 'none', resize: 'vertical', boxSizing: 'border-box',
-                }}/>
+                style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}/>
             </div>
             <button style={{
-              width: '100%', padding: '13px',
-              backgroundColor: 'transparent',
+              width: '100%', padding: '13px', backgroundColor: 'transparent',
               border: '1.5px solid #00FFCC', color: '#00FFCC',
-              borderRadius: '8px', fontSize: '0.95rem',
-              fontWeight: '600', cursor: 'pointer',
+              borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer',
             }}
               onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
               onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
@@ -604,20 +755,12 @@ function App() {
             </button>
           </div>
 
-          {/* ── RIGHT: Contact Info with SVG icons ───── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-            {/* Email card */}
-            <div style={{
-              backgroundColor: '#0a0f1e', borderRadius: '10px',
-              border: '1px solid #1e2a45', padding: '20px 24px',
-              display: 'flex', alignItems: 'center', gap: '16px',
-            }}>
+            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-                  stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <polyline points="22,6 12,13 2,6"
-                  stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <polyline points="22,6 12,13 2,6" stroke="#00FFCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <div>
                 <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>Email</div>
@@ -625,54 +768,36 @@ function App() {
               </div>
             </div>
 
-            {/* LinkedIn card */}
-            <div style={{
-              backgroundColor: '#0a0f1e', borderRadius: '10px',
-              border: '1px solid #1e2a45', padding: '20px 24px',
-              display: 'flex', alignItems: 'center', gap: '16px',
-            }}>
+            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="#0A66C2">
                 <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
                 <circle cx="4" cy="4" r="2"/>
               </svg>
               <div>
                 <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>LinkedIn</div>
-                <a href="https://www.linkedin.com/in/diana-opiyo-680b98309/"
-                  target="_blank" rel="noopener noreferrer"
+                <a href="https://www.linkedin.com/in/diana-opiyo-680b98309/" target="_blank" rel="noopener noreferrer"
                   style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>
                   diana-opiyo
                 </a>
               </div>
             </div>
 
-            {/* GitHub card */}
-            <div style={{
-              backgroundColor: '#0a0f1e', borderRadius: '10px',
-              border: '1px solid #1e2a45', padding: '20px 24px',
-              display: 'flex', alignItems: 'center', gap: '16px',
-            }}>
+            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                 <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
               </svg>
               <div>
                 <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>GitHub</div>
-                <a href="https://github.com/kopiyo"
-                  target="_blank" rel="noopener noreferrer"
+                <a href="https://github.com/kopiyo" target="_blank" rel="noopener noreferrer"
                   style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>
                   github.com/kopiyo
                 </a>
               </div>
             </div>
 
-            {/* Location card */}
-            <div style={{
-              backgroundColor: '#0a0f1e', borderRadius: '10px',
-              border: '1px solid #1e2a45', padding: '20px 24px',
-              display: 'flex', alignItems: 'center', gap: '16px',
-            }}>
+            <div style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                  stroke="#00FFCC" strokeWidth="2"/>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#00FFCC" strokeWidth="2"/>
                 <circle cx="12" cy="9" r="2.5" stroke="#00FFCC" strokeWidth="2"/>
               </svg>
               <div>
@@ -684,15 +809,9 @@ function App() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{
-          marginTop: '60px', paddingTop: '24px',
-          borderTop: '1px solid #1e2a45',
-          textAlign: 'center', color: '#4a5568', fontSize: '0.8rem'
-        }}>
+        <div style={{ marginTop: '60px', paddingTop: '24px', borderTop: '1px solid #1e2a45', textAlign: 'center', color: '#4a5568', fontSize: '0.8rem' }}>
           © 2026 Diana Opiyo. Built with React.
         </div>
-
       </section>
 
     </div>
