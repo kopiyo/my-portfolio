@@ -667,7 +667,7 @@ function App() {
           {/* Authors */}
           <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px' }}>
             <span style={{ color: '#00FFCC', fontWeight: '600' }}>Diana Opiyo</span>,{' '}
-            Professor Abeer Alsadoon, Dr. Suhila Sawesi
+            <span style={{ color: '#00FFCC', fontWeight: '600' }}>Suhila Sawesi</span>
           </p>
 
           {/* Venue */}
