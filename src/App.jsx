@@ -707,6 +707,11 @@ function App() {
               color: '#60a5fa', borderRadius: '999px', padding: '4px 14px',
               fontSize: '0.72rem', fontWeight: '600',
             }}>Journal Manuscript</span>
+            {/* Authors */}
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px' }}>
+            <span style={{ color: '#00FFCC', fontWeight: '600' }}>Diana Opiyo</span>,{' '}
+            <span style={{ color: '#00FFCC', fontWeight: '600' }}>Suhila Sawesi</span>
+          </p>
           </div>
           <h3 style={{ color: '#94a3b8', fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '10px', lineHeight: 1.6 }}>
             Predicting Perceived Medication Management Difficulty as an Early Indicator of Non-Adherence Risk
