@@ -1,16 +1,14 @@
 // App.jsx — Main portfolio component
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 
 function App() {
 
-  // ── CAROUSEL STATES ─────────────────────────────────
+  // ── STATES ──────────────────────────────────────────
   const [current, setCurrent] = useState(0)
   const [currentArticle, setCurrentArticle] = useState(0)
   const [hoveredCard, setHoveredCard] = useState(null)
-  const [hoveredPub, setHoveredPub] = useState(null)
-  const [hoveredContact, setHoveredContact] = useState(null)
-  const [focusedInput, setFocusedInput] = useState(null)
   const [visibleSections, setVisibleSections] = useState({})
+  const [animationKey, setAnimationKey] = useState(0)
 
   // Auto-slides projects every 4 seconds
   useEffect(() => {
@@ -29,22 +27,20 @@ function App() {
   }, [])
 
   // ── SCROLL REVEAL ────────────────────────────────────
-  // Watches each section and marks it visible when scrolled into view
   useEffect(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        // ← Now sets true AND false — resets when section leaves view
-        setVisibleSections(prev => ({ ...prev, [entry.target.id]: entry.isIntersecting }))
-      })
-    },
-    { threshold: 0.1 }
-  )
-  document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
-  return () => observer.disconnect()
-}, [])
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          setVisibleSections(prev => ({ ...prev, [entry.target.id]: entry.isIntersecting }))
+        })
+      },
+      { threshold: 0.1 }
+    )
+    document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
+    return () => observer.disconnect()
+  }, [])
 
-  // ── SKILLS DATA ─────────────────────────────────────
+  // ── SKILLS DATA ──────────────────────────────────────
   const technicalSkills = [
     'Python', 'R', 'SQL', 'STATA', 'SPSS', 'JASP', 'JAMOVI',
     'MS Excel', 'Excel', 'Access', 'Tableau', 'Power BI',
@@ -159,7 +155,7 @@ function App() {
     },
   ]
 
-  // ── CONTACT INFO ─────────────────────────────────────
+  // ── CONTACT CARDS ────────────────────────────────────
   const contactCards = [
     {
       id: 'email', label: 'Email', value: 'kopiyodiana@gmail.com', isLink: false,
@@ -189,12 +185,19 @@ function App() {
     },
   ]
 
-  // ── SCROLL REVEAL STYLE HELPER ───────────────────────
+  // ── REVEAL HELPER ────────────────────────────────────
   const reveal = (id, delay = 0) => ({
     opacity: visibleSections[id] ? 1 : 0,
     transform: visibleSections[id] ? 'translateY(0)' : 'translateY(32px)',
     transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
   })
+
+  // ── NAV CLICK HANDLER ────────────────────────────────
+  const handleNavClick = (link) => {
+    const id = link.toLowerCase().replace(/ /g, '-')
+    setVisibleSections(prev => ({ ...prev, [id]: false }))
+    setAnimationKey(prev => prev + 1)
+  }
 
   return (
     <div style={{ backgroundColor: '#0a0f1e', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
@@ -219,8 +222,6 @@ function App() {
           .nav-links { font-size: 0.65rem !important; gap: 8px !important; }
           .hero-text { font-size: 1.7rem !important; }
         }
-
-        /* What I Do hover */
         .what-i-do-card {
           transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
           cursor: default;
@@ -230,27 +231,13 @@ function App() {
           background-color: #111e35 !important;
           box-shadow: 0 8px 32px rgba(0,255,204,0.08);
         }
-
-        /* Skill pill hover */
         .skill-pill {
           transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
           cursor: default;
         }
-        .skill-pill:hover {
-          transform: translateY(-2px);
-          color: white !important;
-        }
-
-        /* Publication card hover */
-        .pub-card {
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        .pub-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 28px rgba(0,255,204,0.1);
-        }
-
-        /* Contact info card hover */
+        .skill-pill:hover { transform: translateY(-2px); color: white !important; }
+        .pub-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .pub-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,255,204,0.1); }
         .contact-info-card {
           transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
           cursor: default;
@@ -260,18 +247,12 @@ function App() {
           border-color: rgba(0,255,204,0.4) !important;
           box-shadow: 0 6px 20px rgba(0,255,204,0.08);
         }
-
-        /* Input focus glow */
         .form-input:focus {
           border-color: #00FFCC !important;
           box-shadow: 0 0 0 3px rgba(0,255,204,0.12) !important;
           outline: none !important;
         }
-        .form-input {
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        /* Skill pill animation — staggered fade in */
+        .form-input { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
         @keyframes pillFadeIn {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -291,7 +272,9 @@ function App() {
       }}>
         <div className="nav-links" style={{ display: 'flex', gap: '32px', fontSize: '0.9rem' }}>
           {['Home', 'What I Do', 'My Projects', 'Skills', 'Articles', 'Publications', 'Contact Me'].map((link, i) => (
-            <a key={i} href={`#${link.toLowerCase().replace(/ /g, '-')}`}
+            <a key={i}
+              href={`#${link.toLowerCase().replace(/ /g, '-')}`}
+              onClick={() => handleNavClick(link)}
               style={{
                 color: i === 0 ? '#00FFCC' : '#cbd5e1',
                 textDecoration: 'none',
@@ -304,7 +287,7 @@ function App() {
         </div>
       </nav>
 
-      {/* ── HERO SECTION ─────────────────────────────── */}
+      {/* ── HERO ─────────────────────────────────────── */}
       <section id="home" className="hero-section" style={{
         minHeight: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '120px 60px 60px 60px',
@@ -327,11 +310,9 @@ function App() {
             <span style={{ color: '#00FFCC' }}>educational equity</span>,
             and I care deeply about making data science accessible and impactful beyond the lab.
           </p>
-          <a href="#contact-me" style={{
-            border: '1.5px solid #00FFCC', color: '#00FFCC',
-            padding: '12px 28px', borderRadius: '999px',
-            textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem',
-          }}
+          <a href="#contact-me"
+            onClick={() => handleNavClick('Contact Me')}
+            style={{ border: '1.5px solid #00FFCC', color: '#00FFCC', padding: '12px 28px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}
             onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
             onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
             Get in touch &rsaquo;&rsaquo;&rsaquo;
@@ -339,7 +320,7 @@ function App() {
         </div>
       </section>
 
-      {/* ── WHAT I DO ────────────────────────────────── */}
+      {/* ── WHAT I DO ──────────────────────────────────── */}
       <section id="what-i-do" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
         <div style={reveal('what-i-do')}>
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>What I Do</h2>
@@ -348,11 +329,7 @@ function App() {
         <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0px', alignItems: 'start' }}>
           {whatIDoCards.map((card, idx) => (
             <div key={card.id} className="what-i-do-card"
-              style={{
-                padding: '28px', backgroundColor: '#0d1526', borderRadius: '4px',
-                ...card.borderSide,
-                ...reveal('what-i-do', idx * 0.1),
-              }}
+              style={{ padding: '28px', backgroundColor: '#0d1526', borderRadius: '4px', ...card.borderSide, ...reveal('what-i-do', idx * 0.1) }}
               onMouseEnter={() => setHoveredCard(card.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
@@ -381,7 +358,7 @@ function App() {
         </div>
       </section>
 
-      {/* ── MY PROJECTS ──────────────────────────────── */}
+      {/* ── MY PROJECTS ────────────────────────────────── */}
       <section id="my-projects" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
         <div style={reveal('my-projects')}>
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>My Projects</h2>
@@ -391,6 +368,7 @@ function App() {
         <div style={{ ...reveal('my-projects', 0.15), position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
           <div style={{ display: 'flex', transition: 'transform 0.6s ease-in-out', transform: `translateX(-${current * 100}%)` }}>
 
+            {/* Slide 1 */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
               <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
@@ -419,6 +397,7 @@ function App() {
               </div>
             </div>
 
+            {/* Slide 2 */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
               <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
@@ -447,6 +426,7 @@ function App() {
               </div>
             </div>
 
+            {/* Slide 3 */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
               <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
@@ -493,7 +473,7 @@ function App() {
         </div>
       </section>
 
-      {/* ── SKILLS ───────────────────────────────────── */}
+      {/* ── SKILLS ─────────────────────────────────────── */}
       <section id="skills" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
         <div style={reveal('skills')}>
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Skill Set</h2>
@@ -502,16 +482,15 @@ function App() {
 
         <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
 
-          {/* Technical Tools */}
           <div style={{ ...reveal('skills', 0.1), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
             <h3 style={{ color: '#00FFCC', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Technical Tools</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {technicalSkills.map((skill, i) => (
-                <span key={i} className="skill-pill skill-pill-animate"
+                <span key={`${animationKey}-tech-${i}`} className="skill-pill skill-pill-animate"
                   style={{
                     backgroundColor: 'rgba(0,255,204,0.08)', border: '1px solid rgba(0,255,204,0.2)',
                     color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                    animationDelay: visibleSections['skills'] ? `${i * 0.04}s` : '0s',
+                    animationDelay: `${i * 0.04}s`,
                   }}
                   onMouseEnter={e => { e.target.style.borderColor = '#00FFCC'; e.target.style.color = '#00FFCC'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'rgba(0,255,204,0.2)'; e.target.style.color = '#94a3b8'; }}>
@@ -521,16 +500,15 @@ function App() {
             </div>
           </div>
 
-          {/* Analytical Skills */}
           <div style={{ ...reveal('skills', 0.2), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
             <h3 style={{ color: '#60a5fa', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Analytical Skills</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {analyticalSkills.map((skill, i) => (
-                <span key={i} className="skill-pill skill-pill-animate"
+                <span key={`${animationKey}-analytical-${i}`} className="skill-pill skill-pill-animate"
                   style={{
                     backgroundColor: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
                     color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                    animationDelay: visibleSections['skills'] ? `${i * 0.06}s` : '0s',
+                    animationDelay: `${i * 0.06}s`,
                   }}
                   onMouseEnter={e => { e.target.style.borderColor = '#60a5fa'; e.target.style.color = '#60a5fa'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'rgba(96,165,250,0.2)'; e.target.style.color = '#94a3b8'; }}>
@@ -540,16 +518,15 @@ function App() {
             </div>
           </div>
 
-          {/* Soft Skills */}
           <div style={{ ...reveal('skills', 0.3), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
             <h3 style={{ color: '#e879f9', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Soft Skills</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {softSkills.map((skill, i) => (
-                <span key={i} className="skill-pill skill-pill-animate"
+                <span key={`${animationKey}-soft-${i}`} className="skill-pill skill-pill-animate"
                   style={{
                     backgroundColor: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.2)',
                     color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                    animationDelay: visibleSections['skills'] ? `${i * 0.04}s` : '0s',
+                    animationDelay: `${i * 0.04}s`,
                   }}
                   onMouseEnter={e => { e.target.style.borderColor = '#e879f9'; e.target.style.color = '#e879f9'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'rgba(232,121,249,0.2)'; e.target.style.color = '#94a3b8'; }}>
@@ -562,7 +539,7 @@ function App() {
         </div>
       </section>
 
-      {/* ── ARTICLES ─────────────────────────────────── */}
+      {/* ── ARTICLES ───────────────────────────────────── */}
       <section id="articles" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
         <div style={reveal('articles')}>
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Articles</h2>
@@ -576,7 +553,7 @@ function App() {
         <div style={{ ...reveal('articles', 0.15), position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
           <div style={{ display: 'flex', transition: 'transform 0.6s ease-in-out', transform: `translateX(-${currentArticle * 100}%)` }}>
             {articles.map((article, i) => (
-              <div key={i} style={{ minWidth: '100%', boxSizing: 'border-box' }}>
+              <div key={`${animationKey}-article-${i}`} style={{ minWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="article-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', padding: '40px 48px', display: 'flex', flexDirection: 'column', minHeight: '220px', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
@@ -619,7 +596,7 @@ function App() {
         </div>
       </section>
 
-      {/* ── PUBLICATIONS ─────────────────────────────── */}
+      {/* ── PUBLICATIONS ───────────────────────────────── */}
       <section id="publications" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
         <div style={reveal('publications')}>
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Publications</h2>
@@ -629,12 +606,7 @@ function App() {
           </p>
         </div>
 
-        {/* Accepted paper */}
-        <div className="pub-card" style={{
-          ...reveal('publications', 0.15),
-          backgroundColor: '#0a0f1e', borderRadius: '12px',
-          border: '1px solid #1e2a45', padding: '32px', borderLeft: '4px solid #00FFCC',
-        }}>
+        <div className="pub-card" style={{ ...reveal('publications', 0.15), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '32px', borderLeft: '4px solid #00FFCC' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
             <span style={{ backgroundColor: 'rgba(0,255,204,0.12)', border: '1px solid rgba(0,255,204,0.35)', color: '#00FFCC', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '700' }}>✓ ACCEPTED</span>
             <span style={{ backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', color: '#60a5fa', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '600' }}>Conference Paper</span>
@@ -663,12 +635,7 @@ function App() {
           </div>
         </div>
 
-        {/* In progress paper */}
-        <div className="pub-card" style={{
-          ...reveal('publications', 0.25),
-          marginTop: '20px', backgroundColor: '#0a0f1e', borderRadius: '12px',
-          border: '1px solid #1e2a45', padding: '28px', borderLeft: '4px solid #4a5568',
-        }}>
+        <div className="pub-card" style={{ ...reveal('publications', 0.25), marginTop: '20px', backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px', borderLeft: '4px solid #4a5568' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
             <span style={{ backgroundColor: 'rgba(74,85,104,0.2)', border: '1px solid rgba(74,85,104,0.4)', color: '#94a3b8', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '700' }}>IN PROGRESS</span>
             <span style={{ backgroundColor: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', color: '#60a5fa', borderRadius: '999px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '600' }}>Journal Manuscript</span>
@@ -676,7 +643,6 @@ function App() {
           <h3 style={{ color: '#94a3b8', fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '10px', lineHeight: 1.6 }}>
             Predicting Perceived Medication Management Difficulty as an Early Indicator of Non-Adherence Risk
           </h3>
-          {/* Description paragraph */}
           <p style={{ color: '#94a3b8', fontSize: '0.88rem', lineHeight: '1.8', marginBottom: '12px' }}>
             This study investigates whether perceived medication management difficulty can serve as an
             early warning signal for medication non-adherence. Using the 2021 NCSME Survey (N=1,521),
@@ -690,7 +656,7 @@ function App() {
         </div>
       </section>
 
-      {/* ── CONTACT ME ───────────────────────────────── */}
+      {/* ── CONTACT ME ─────────────────────────────────── */}
       <section id="contact-me" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0a0f1e' }}>
         <div style={reveal('contact-me')}>
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Contact Me</h2>
@@ -702,7 +668,6 @@ function App() {
 
         <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
 
-          {/* Form */}
           <div style={reveal('contact-me', 0.1)}>
             {[
               { label: 'Name', type: 'text', placeholder: 'Your name', id: 'name' },
@@ -726,16 +691,10 @@ function App() {
             </button>
           </div>
 
-          {/* Contact info cards */}
           <div style={{ ...reveal('contact-me', 0.2), display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {contactCards.map((card, idx) => (
               <div key={card.id} className="contact-info-card"
-                style={{
-                  backgroundColor: '#0d1526', borderRadius: '10px',
-                  border: '1px solid #1e2a45', padding: '18px 24px',
-                  display: 'flex', alignItems: 'center', gap: '16px',
-                  animationDelay: `${idx * 0.08}s`,
-                }}>
+                style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '18px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                 {card.icon}
                 <div>
                   <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>{card.label}</div>
