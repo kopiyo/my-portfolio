@@ -31,19 +31,18 @@ function App() {
   // ── SCROLL REVEAL ────────────────────────────────────
   // Watches each section and marks it visible when scrolled into view
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }))
-          }
-        })
-      },
-      { threshold: 0.1 } // triggers when 10% of section is visible
-    )
-    document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
-    return () => observer.disconnect()
-  }, [])
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        // ← Now sets true AND false — resets when section leaves view
+        setVisibleSections(prev => ({ ...prev, [entry.target.id]: entry.isIntersecting }))
+      })
+    },
+    { threshold: 0.1 }
+  )
+  document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
+  return () => observer.disconnect()
+}, [])
 
   // ── SKILLS DATA ─────────────────────────────────────
   const technicalSkills = [
