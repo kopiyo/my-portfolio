@@ -35,7 +35,7 @@ function App() {
           }
         })
       },
-      { threshold: 0.05 }
+      { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
     )
     document.querySelectorAll('section[id]').forEach(s => observer.observe(s))
     return () => observer.disconnect()
@@ -43,10 +43,10 @@ function App() {
 
   // ── REVEAL HELPER ────────────────────────────────────
   const reveal = (id, delay = 0) => ({
-    opacity: visibleSections[id] ? 1 : 0,
-    transform: visibleSections[id] ? 'translateY(0)' : 'translateY(24px)',
-    transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
-  })
+  opacity: visibleSections[id] ? 1 : 0,
+  transform: visibleSections[id] ? 'translateY(0px)' : 'translateY(40px)',
+  transition: `opacity 0.7s cubic-bezier(0.4,0,0.2,1) ${delay}s, transform 0.7s cubic-bezier(0.4,0,0.2,1) ${delay}s`,
+})
 
   // ── SKILLS DATA ──────────────────────────────────────
   const technicalSkills = [
