@@ -8,7 +8,6 @@ function App() {
   const [currentArticle, setCurrentArticle] = useState(0)
   const [hoveredCard, setHoveredCard] = useState(null)
   const [visibleSections, setVisibleSections] = useState({})
-  const [animationKey, setAnimationKey] = useState(0)
 
   // Auto-slides projects every 4 seconds
   useEffect(() => {
@@ -26,22 +25,28 @@ function App() {
     return () => clearInterval(timer)
   }, [])
 
-  // ── SCROLL REVEAL ────────────────────────────────────
+  // ── SCROLL REVEAL — animates in once, stays permanently ──
   useEffect(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        // Only set to true when visible — never set back to false automatically
-        if (entry.isIntersecting) {
-          setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }))
-        }
-      })
-    },
-    { threshold: 0.1 }
-  )
-  document.querySelectorAll('section[id]').forEach(section => observer.observe(section))
-  return () => observer.disconnect()
-}, [])
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }))
+          }
+        })
+      },
+      { threshold: 0.05 }
+    )
+    document.querySelectorAll('section[id]').forEach(s => observer.observe(s))
+    return () => observer.disconnect()
+  }, [])
+
+  // ── REVEAL HELPER ────────────────────────────────────
+  const reveal = (id, delay = 0) => ({
+    opacity: visibleSections[id] ? 1 : 0,
+    transform: visibleSections[id] ? 'translateY(0)' : 'translateY(24px)',
+    transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
+  })
 
   // ── SKILLS DATA ──────────────────────────────────────
   const technicalSkills = [
@@ -50,12 +55,10 @@ function App() {
     'pandas', 'ggplot', 'scikit-learn', 'PyTorch', 'TensorFlow',
     'Huggingface', 'PySpark', 'Data automation', 'Pivot tables',
   ]
-
   const analyticalSkills = [
     'Data analysis', 'Exploratory data analysis', 'ANOVA', 'ANCOVA',
     'Time series analysis', 'Computer programming',
   ]
-
   const softSkills = [
     'Reliable', 'Self-motivated', 'Problem solving', 'Negotiation skills',
     'Empathy', 'Collaborative', 'Conflict resolution', 'Adaptability',
@@ -68,30 +71,24 @@ function App() {
   // ── ARTICLES DATA ────────────────────────────────────
   const articles = [
     {
-      tag: 'NLP · Data Science',
-      tagColor: '#00FFCC',
-      tagBg: 'rgba(0,255,204,0.1)',
-      tagBorder: 'rgba(0,255,204,0.3)',
+      tag: 'NLP · Data Science', tagColor: '#00FFCC',
+      tagBg: 'rgba(0,255,204,0.1)', tagBorder: 'rgba(0,255,204,0.3)',
       date: 'April 2026',
       title: 'What is Natural Language Processing (NLP)?',
       summary: 'A technical introduction to what NLP is, why it matters, what it can do, and where it appears in everyday life. Covers 9 core NLP tasks with real examples.',
       link: 'https://medium.com/@kopiyodiana/what-is-natural-language-processing-nlp-a868586804f5',
     },
     {
-      tag: 'Machine Learning',
-      tagColor: '#e879f9',
-      tagBg: 'rgba(232,121,249,0.1)',
-      tagBorder: 'rgba(232,121,249,0.3)',
+      tag: 'Machine Learning', tagColor: '#e879f9',
+      tagBg: 'rgba(232,121,249,0.1)', tagBorder: 'rgba(232,121,249,0.3)',
       date: 'Coming Soon',
       title: 'How NLP Works: The Computational Pipeline',
       summary: 'Article 2 of the #LRWithDiana series. Covers tokenisation, part-of-speech tagging, parsing, and how machines build representations of meaning from raw text.',
       link: 'https://medium.com/@kopiyodiana',
     },
     {
-      tag: 'Deep Learning',
-      tagColor: '#60a5fa',
-      tagBg: 'rgba(96,165,250,0.1)',
-      tagBorder: 'rgba(96,165,250,0.3)',
+      tag: 'Deep Learning', tagColor: '#60a5fa',
+      tagBg: 'rgba(96,165,250,0.1)', tagBorder: 'rgba(96,165,250,0.3)',
       date: 'Coming Soon',
       title: 'NLP Techniques: From Word Embeddings to Transformers',
       summary: 'Article 3 of the #LRWithDiana series. A deep dive into Word2Vec, GloVe, LSTMs, Bi-LSTMs, and the Transformer architecture that powers ChatGPT and BERT.',
@@ -188,22 +185,9 @@ function App() {
     },
   ]
 
-  // ── REVEAL HELPER ────────────────────────────────────
-  const reveal = (id, delay = 0) => ({
-    opacity: visibleSections[id] ? 1 : 0,
-    transform: visibleSections[id] ? 'translateY(0)' : 'translateY(32px)',
-    transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
-  })
-
-  // ── NAV CLICK HANDLER ────────────────────────────────
-  const handleNavClick = () => {
-  setAnimationKey(prev => prev + 1)
-}
-
   return (
     <div style={{ backgroundColor: '#0a0f1e', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
 
-      {/* ── GLOBAL STYLES ──────────────────────────────── */}
       <style>{`
         @media (max-width: 768px) {
           .nav-links { gap: 12px !important; font-size: 0.72rem !important; flex-wrap: wrap !important; justify-content: center !important; }
@@ -260,6 +244,7 @@ function App() {
         }
         .skill-pill-animate {
           animation: pillFadeIn 0.4s ease forwards;
+          animation-fill-mode: forwards;
           opacity: 0;
         }
       `}</style>
@@ -275,7 +260,6 @@ function App() {
           {['Home', 'What I Do', 'My Projects', 'Skills', 'Articles', 'Publications', 'Contact Me'].map((link, i) => (
             <a key={i}
               href={`#${link.toLowerCase().replace(/ /g, '-')}`}
-              onClick={() => handleNavClick(link)}
               style={{
                 color: i === 0 ? '#00FFCC' : '#cbd5e1',
                 textDecoration: 'none',
@@ -288,7 +272,7 @@ function App() {
         </div>
       </nav>
 
-      {/* ── HERO ─────────────────────────────────────── */}
+      {/* ── HERO ─────────────────────────────────────────── */}
       <section id="home" className="hero-section" style={{
         minHeight: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '120px 60px 60px 60px',
@@ -312,7 +296,6 @@ function App() {
             and I care deeply about making data science accessible and impactful beyond the lab.
           </p>
           <a href="#contact-me"
-            onClick={() => handleNavClick('Contact Me')}
             style={{ border: '1.5px solid #00FFCC', color: '#00FFCC', padding: '12px 28px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}
             onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
             onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
@@ -365,11 +348,10 @@ function App() {
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>My Projects</h2>
           <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
         </div>
-
         <div style={{ ...reveal('my-projects', 0.15), position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
           <div style={{ display: 'flex', transition: 'transform 0.6s ease-in-out', transform: `translateX(-${current * 100}%)` }}>
 
-            {/* Slide 1 */}
+            {/* Slide 1 — Suicidal Ideation */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
               <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
@@ -398,7 +380,7 @@ function App() {
               </div>
             </div>
 
-            {/* Slide 2 */}
+            {/* Slide 2 — Heart Disease */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
               <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
@@ -427,7 +409,7 @@ function App() {
               </div>
             </div>
 
-            {/* Slide 3 */}
+            {/* Slide 3 — PharmAssist */}
             <div style={{ minWidth: '100%', boxSizing: 'border-box' }}>
               <div className="project-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
                 <div className="project-card-text" style={{ width: '55%', padding: '28px 32px', boxSizing: 'border-box' }}>
@@ -459,13 +441,11 @@ function App() {
             </div>
 
           </div>
-
           <button onClick={() => setCurrent(prev => (prev - 1 + 3) % 3)}
             style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>‹</button>
           <button onClick={() => setCurrent(prev => (prev + 1) % 3)}
             style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>›</button>
         </div>
-
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
           {[0, 1, 2].map(i => (
             <button key={i} onClick={() => setCurrent(i)}
@@ -480,19 +460,14 @@ function App() {
           <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Skill Set</h2>
           <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '30px' }}></div>
         </div>
-
         <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
 
           <div style={{ ...reveal('skills', 0.1), backgroundColor: '#0a0f1e', borderRadius: '12px', border: '1px solid #1e2a45', padding: '28px' }}>
             <h3 style={{ color: '#00FFCC', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Technical Tools</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {technicalSkills.map((skill, i) => (
-                <span key={`${animationKey}-tech-${i}`} className="skill-pill skill-pill-animate"
-                  style={{
-                    backgroundColor: 'rgba(0,255,204,0.08)', border: '1px solid rgba(0,255,204,0.2)',
-                    color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                    animationDelay: `${i * 0.04}s`,
-                  }}
+                <span key={`tech-${i}`} className="skill-pill skill-pill-animate"
+                  style={{ backgroundColor: 'rgba(0,255,204,0.08)', border: '1px solid rgba(0,255,204,0.2)', color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem', animationDelay: `${i * 0.04}s` }}
                   onMouseEnter={e => { e.target.style.borderColor = '#00FFCC'; e.target.style.color = '#00FFCC'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'rgba(0,255,204,0.2)'; e.target.style.color = '#94a3b8'; }}>
                   {skill}
@@ -505,12 +480,8 @@ function App() {
             <h3 style={{ color: '#60a5fa', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Analytical Skills</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {analyticalSkills.map((skill, i) => (
-                <span key={`${animationKey}-analytical-${i}`} className="skill-pill skill-pill-animate"
-                  style={{
-                    backgroundColor: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
-                    color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                    animationDelay: `${i * 0.06}s`,
-                  }}
+                <span key={`analytical-${i}`} className="skill-pill skill-pill-animate"
+                  style={{ backgroundColor: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)', color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem', animationDelay: `${i * 0.06}s` }}
                   onMouseEnter={e => { e.target.style.borderColor = '#60a5fa'; e.target.style.color = '#60a5fa'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'rgba(96,165,250,0.2)'; e.target.style.color = '#94a3b8'; }}>
                   {skill}
@@ -523,12 +494,8 @@ function App() {
             <h3 style={{ color: '#e879f9', fontSize: '1rem', fontWeight: 'bold', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>Soft Skills</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {softSkills.map((skill, i) => (
-                <span key={`${animationKey}-soft-${i}`} className="skill-pill skill-pill-animate"
-                  style={{
-                    backgroundColor: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.2)',
-                    color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem',
-                    animationDelay: `${i * 0.04}s`,
-                  }}
+                <span key={`soft-${i}`} className="skill-pill skill-pill-animate"
+                  style={{ backgroundColor: 'rgba(232,121,249,0.08)', border: '1px solid rgba(232,121,249,0.2)', color: '#94a3b8', borderRadius: '6px', padding: '5px 10px', fontSize: '0.78rem', animationDelay: `${i * 0.04}s` }}
                   onMouseEnter={e => { e.target.style.borderColor = '#e879f9'; e.target.style.color = '#e879f9'; }}
                   onMouseLeave={e => { e.target.style.borderColor = 'rgba(232,121,249,0.2)'; e.target.style.color = '#94a3b8'; }}>
                   {skill}
@@ -550,11 +517,10 @@ function App() {
             <span style={{ color: '#00FFCC', fontWeight: '600' }}>#LRWithDiana</span> series.
           </p>
         </div>
-
         <div style={{ ...reveal('articles', 0.15), position: 'relative', overflow: 'hidden', borderRadius: '12px' }}>
           <div style={{ display: 'flex', transition: 'transform 0.6s ease-in-out', transform: `translateX(-${currentArticle * 100}%)` }}>
             {articles.map((article, i) => (
-              <div key={`${animationKey}-article-${i}`} style={{ minWidth: '100%', boxSizing: 'border-box' }}>
+              <div key={`article-${i}`} style={{ minWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="article-card" style={{ backgroundColor: '#0d1526', borderRadius: '12px', border: '1px solid #1e2a45', padding: '40px 48px', display: 'flex', flexDirection: 'column', minHeight: '220px', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
@@ -579,14 +545,12 @@ function App() {
           <button onClick={() => setCurrentArticle(prev => (prev + 1) % 3)}
             style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid #1e2a45', color: 'white', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.1rem', cursor: 'pointer', zIndex: 10 }}>›</button>
         </div>
-
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
           {[0, 1, 2].map(i => (
             <button key={i} onClick={() => setCurrentArticle(i)}
               style={{ width: i === currentArticle ? '24px' : '8px', height: '8px', borderRadius: '999px', backgroundColor: i === currentArticle ? '#00FFCC' : '#1e2a45', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}/>
           ))}
         </div>
-
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
           <a href="https://medium.com/@kopiyodiana" target="_blank" rel="noopener noreferrer"
             style={{ border: '1.5px solid #00FFCC', color: '#00FFCC', padding: '12px 32px', borderRadius: '999px', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' }}
@@ -666,9 +630,7 @@ function App() {
             Projects, collaborations, research, or just to say hi, I am all for it 😊
           </p>
         </div>
-
         <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
-
           <div style={reveal('contact-me', 0.1)}>
             {[
               { label: 'Name', type: 'text', placeholder: 'Your name', id: 'name' },
@@ -691,19 +653,15 @@ function App() {
               Send Message
             </button>
           </div>
-
           <div style={{ ...reveal('contact-me', 0.2), display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {contactCards.map((card, idx) => (
+            {contactCards.map(card => (
               <div key={card.id} className="contact-info-card"
                 style={{ backgroundColor: '#0d1526', borderRadius: '10px', border: '1px solid #1e2a45', padding: '18px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                 {card.icon}
                 <div>
                   <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginBottom: '4px' }}>{card.label}</div>
                   {card.isLink
-                    ? <a href={card.href} target="_blank" rel="noopener noreferrer"
-                        style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>
-                        {card.value}
-                      </a>
+                    ? <a href={card.href} target="_blank" rel="noopener noreferrer" style={{ color: '#00FFCC', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>{card.value}</a>
                     : <div style={{ color: card.id === 'location' ? 'white' : '#00FFCC', fontSize: '0.9rem', fontWeight: '500' }}>{card.value}</div>
                   }
                 </div>
@@ -711,7 +669,6 @@ function App() {
             ))}
           </div>
         </div>
-
         <div style={{ marginTop: '60px', paddingTop: '24px', borderTop: '1px solid #1e2a45', textAlign: 'center', color: '#4a5568', fontSize: '0.8rem' }}>
           © 2026 Diana Opiyo. Built with React.
         </div>
