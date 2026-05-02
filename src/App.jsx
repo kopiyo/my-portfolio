@@ -1369,7 +1369,7 @@ function App() {
       </section>
 
       {/* ── CONTACT ME ─────────────────────────────────── */}
-      <section id="honors" className="section-pad" style={{ padding: '64px 80px', background: 'linear-gradient(135deg, #eef9fb 0%, #f8fbfc 42%, #fbf2e8 100%)', color: '#001b33' }}>
+      <section id="honors" className="section-pad" style={{ padding: '112px 80px 64px', background: 'linear-gradient(135deg, #eef9fb 0%, #f8fbfc 42%, #fbf2e8 100%)', color: '#001b33' }}>
         <div className="lovable-heading" style={{ ...reveal('honors'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '38px' }}>
           <h2 style={{ fontSize: '2.25rem', fontWeight: '800', color: '#001b33', margin: 0, letterSpacing: '0' }}>Awards &amp; honors</h2>
           <span style={{ color: '#17324d', fontSize: '0.92rem', fontFamily: 'Consolas, Monaco, monospace' }}>{honors.length} total</span>
@@ -1390,7 +1390,7 @@ function App() {
         </div>
       </section>
 
-      <section id="publications" className="section-pad" style={{ padding: '64px 80px', backgroundColor: '#f3fafb', color: '#001b33' }}>
+      <section id="publications" className="section-pad" style={{ padding: '112px 80px 64px', backgroundColor: '#f3fafb', color: '#001b33' }}>
         <div className="lovable-heading" style={{ ...reveal('publications'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '38px' }}>
           <h2 style={{ fontSize: '2.25rem', fontWeight: '800', color: '#001b33', margin: 0, letterSpacing: '0' }}>Publications &amp; research</h2>
           <span style={{ color: '#17324d', fontSize: '0.92rem', fontFamily: 'Consolas, Monaco, monospace' }}>{publicationEntries.length} entries</span>
@@ -1411,7 +1411,7 @@ function App() {
         </div>
       </section>
 
-      <section id="conferences" className="section-pad" style={{ padding: '64px 80px', background: 'linear-gradient(180deg, #f8fbfc 0%, #eef9fb 100%)', color: '#001b33' }}>
+      <section id="conferences" className="section-pad" style={{ padding: '112px 80px 64px', background: 'linear-gradient(180deg, #f8fbfc 0%, #eef9fb 100%)', color: '#001b33' }}>
         <div className="lovable-heading" style={{ ...reveal('conferences'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '38px' }}>
           <h2 style={{ fontSize: '2.25rem', fontWeight: '800', color: '#001b33', margin: 0, letterSpacing: '0' }}>Conferences &amp; talks</h2>
           <span style={{ color: '#17324d', fontSize: '0.92rem', fontFamily: 'Consolas, Monaco, monospace' }}>{conferenceTalks.length} appearances</span>
