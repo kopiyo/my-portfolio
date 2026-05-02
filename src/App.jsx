@@ -1139,18 +1139,18 @@ function App() {
       </section>
 
       {/* ── SKILLS ─────────────────────────────────────── */}
-      <section id="live-coding" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#0d1526' }}>
+      <section id="live-coding" className="section-pad" style={{ padding: '50px 80px', backgroundColor: '#eef9fb' }}>
         <div style={reveal('live-coding')}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Live Coding Videos</h2>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#001b33', marginBottom: '8px' }}>Live Coding Videos</h2>
           <div style={{ width: '60px', height: '3px', backgroundColor: '#00FFCC', marginBottom: '10px' }}></div>
-          <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '30px' }}>
+          <p style={{ color: '#17324d', fontSize: '0.95rem', marginBottom: '30px' }}>
             Practical walkthroughs of data science, machine learning, and NLP workflows are coming soon.
           </p>
         </div>
-        <div style={{ ...reveal('live-coding', 0.1), backgroundColor: '#0a0f1e', border: '1px solid #1e2a45', borderRadius: '12px', padding: '32px', maxWidth: '760px' }}>
-          <span style={{ backgroundColor: 'rgba(0,255,204,0.08)', border: '1px solid rgba(0,255,204,0.28)', color: '#00FFCC', borderRadius: '999px', padding: '5px 14px', fontSize: '0.76rem', fontWeight: '800', display: 'inline-block', marginBottom: '16px' }}>Coming Soon</span>
-          <h3 style={{ color: 'white', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 12px 0', lineHeight: 1.45 }}>Live Data Science Walkthroughs</h3>
-          <p style={{ color: '#94a3b8', fontSize: '0.92rem', lineHeight: '1.8', margin: 0 }}>
+        <div style={{ ...reveal('live-coding', 0.1), backgroundColor: 'rgba(255,255,255,0.58)', border: '1px solid #c7d8e2', borderRadius: '12px', padding: '32px', maxWidth: '760px', boxShadow: '0 18px 36px rgba(0,27,51,0.03)' }}>
+          <span style={{ backgroundColor: 'rgba(0,138,69,0.08)', border: '1px solid #b7d9c9', color: '#008a45', borderRadius: '999px', padding: '5px 14px', fontSize: '0.76rem', fontWeight: '800', display: 'inline-block', marginBottom: '16px' }}>Coming Soon</span>
+          <h3 style={{ color: '#001b33', fontSize: '1.2rem', fontWeight: 'bold', margin: '0 0 12px 0', lineHeight: 1.45 }}>Live Data Science Walkthroughs</h3>
+          <p style={{ color: '#314a63', fontSize: '0.92rem', lineHeight: '1.8', margin: 0 }}>
             I will add recorded walkthroughs here as I publish project demos, coding sessions, and practical explanations.
           </p>
         </div>
