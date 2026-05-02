@@ -14,6 +14,9 @@ function App() {
   const [hoveredCard, setHoveredCard] = useState(null)
   const [visibleSections, setVisibleSections] = useState({ [activePage]: true })
   const [activeSkill, setActiveSkill] = useState('Machine Learning')
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '', website: '' })
+  const [contactStatus, setContactStatus] = useState({ type: '', message: '' })
+  const [isSendingMessage, setIsSendingMessage] = useState(false)
 
   // Auto-slides articles every 5 seconds
   useEffect(() => {
@@ -42,6 +45,43 @@ function App() {
     }
     setVisibleSections(prev => ({ ...prev, [activePage]: true }))
   }, [activePage])
+
+  const handleContactChange = (event) => {
+    const { name, value } = event.target
+    setContactForm(prev => ({ ...prev, [name]: value }))
+    if (contactStatus.message) {
+      setContactStatus({ type: '', message: '' })
+    }
+  }
+
+  const handleContactSubmit = async (event) => {
+    event.preventDefault()
+    setIsSendingMessage(true)
+    setContactStatus({ type: '', message: '' })
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactForm),
+      })
+      const result = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Your message could not be sent.')
+      }
+
+      setContactStatus({ type: 'success', message: result.message || 'Message sent successfully.' })
+      setContactForm({ name: '', email: '', message: '', website: '' })
+    } catch (error) {
+      setContactStatus({
+        type: 'error',
+        message: error.message || 'Something went wrong. Please email me directly.',
+      })
+    } finally {
+      setIsSendingMessage(false)
+    }
+  }
 
   // ── SCROLL REVEAL — animates in once, stays permanently ──
   useEffect(() => {
@@ -1443,28 +1483,72 @@ function App() {
           </p>
         </div>
         <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
-          <div style={reveal('contact-me', 0.1)}>
+          <form style={reveal('contact-me', 0.1)} onSubmit={handleContactSubmit}>
+            <input
+              type="text"
+              name="website"
+              value={contactForm.website}
+              onChange={handleContactChange}
+              tabIndex="-1"
+              autoComplete="off"
+              aria-hidden="true"
+              style={{ display: 'none' }}
+            />
             {[
               { label: 'Name', type: 'text', placeholder: 'Your name', id: 'name' },
               { label: 'Email', type: 'email', placeholder: 'Enter your email', id: 'email' },
             ].map(field => (
               <div key={field.id} style={{ marginBottom: '20px' }}>
                 <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>{field.label}</label>
-                <input type={field.type} placeholder={field.placeholder} className="form-input"
+                <input
+                  type={field.type}
+                  name={field.id}
+                  value={contactForm[field.id]}
+                  onChange={handleContactChange}
+                  placeholder={field.placeholder}
+                  className="form-input"
+                  required
+                  maxLength={field.id === 'name' ? 120 : 160}
                   style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}/>
               </div>
             ))}
             <div style={{ marginBottom: '24px' }}>
               <label style={{ color: '#94a3b8', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Message</label>
-              <textarea placeholder="Your message..." rows={5} className="form-input"
+              <textarea
+                name="message"
+                value={contactForm.message}
+                onChange={handleContactChange}
+                placeholder="Your message..."
+                rows={5}
+                className="form-input"
+                required
+                maxLength={4000}
                 style={{ width: '100%', padding: '12px 16px', backgroundColor: '#0d1526', border: '1px solid #1e2a45', borderRadius: '8px', color: 'white', fontSize: '0.9rem', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}/>
             </div>
-            <button style={{ width: '100%', padding: '13px', backgroundColor: 'transparent', border: '1.5px solid #00FFCC', color: '#00FFCC', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer' }}
-              onMouseEnter={e => { e.target.style.backgroundColor = '#00FFCC'; e.target.style.color = '#000'; }}
-              onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#00FFCC'; }}>
-              Send Message
+            <button
+              type="submit"
+              disabled={isSendingMessage}
+              style={{ width: '100%', padding: '13px', backgroundColor: isSendingMessage ? 'rgba(0,255,204,0.12)' : 'transparent', border: '1.5px solid #00FFCC', color: '#00FFCC', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: isSendingMessage ? 'not-allowed' : 'pointer', opacity: isSendingMessage ? 0.75 : 1 }}
+              onMouseEnter={e => {
+                if (!isSendingMessage) {
+                  e.target.style.backgroundColor = '#00FFCC'
+                  e.target.style.color = '#000'
+                }
+              }}
+              onMouseLeave={e => {
+                if (!isSendingMessage) {
+                  e.target.style.backgroundColor = 'transparent'
+                  e.target.style.color = '#00FFCC'
+                }
+              }}>
+              {isSendingMessage ? 'Sending...' : 'Send Message'}
             </button>
-          </div>
+            {contactStatus.message && (
+              <p style={{ color: contactStatus.type === 'success' ? '#008a45' : '#b42318', fontSize: '0.88rem', lineHeight: '1.6', margin: '14px 0 0 0' }}>
+                {contactStatus.message}
+              </p>
+            )}
+          </form>
           <div style={{ ...reveal('contact-me', 0.2), display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {contactCards.map(card => (
               <div key={card.id} className="contact-info-card"
