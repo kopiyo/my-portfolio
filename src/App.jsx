@@ -157,6 +157,13 @@ function App() {
   // ── WHAT I DO CARDS ──────────────────────────────────
   const honors = [
     {
+      title: 'Predict 5 Contest Honorable Mention',
+      year: '2026',
+      organization: 'Awarded by: American Statistical Association',
+      image: '',
+      description: 'Earned Honorable Mention in the graduate student category of the ASA Predict 5 contest, recognizing applied statistical thinking, data analysis, and predictive modeling work.',
+    },
+    {
       title: 'Best Overall Project',
       year: '2026',
       organization: 'Awarded by: College of Computing, Grand Valley State University',
@@ -357,6 +364,19 @@ function App() {
   ]
 
   const experienceItems = [
+    {
+      role: 'Student Research Assistant',
+      organization: 'Grand Valley State University, Department of Information Sciences and Technologies',
+      period: 'May 7, 2026 - August 28, 2026',
+      description: 'Summer research assistantship focused on data analysis and reporting under the mentorship of Dr. Ali Raza.',
+      responsibilities: [
+        'Support data analysis and reporting for research projects in the Department of Information Sciences and Technologies.',
+        'Prepare clear summaries, tables, and visualizations to communicate research findings.',
+        'Contribute to research workflows through careful data cleaning, documentation, and interpretation.',
+        'Collaborate with Dr. Ali Raza and department stakeholders to strengthen analysis quality and reporting clarity.',
+      ],
+      highlights: ['Data Analysis', 'Research Reporting', 'GVSU'],
+    },
     {
       role: 'Statistics, Computer Science, and Mathematics Instructor',
       organization: 'Technical University of Mombasa',
