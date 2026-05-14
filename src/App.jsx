@@ -921,13 +921,13 @@ function App() {
               Includes my data science projects, machine learning deployment work, research publications, technical skills, and teaching background.
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <a href="/Diana_Opiyo_Resume.pdf" target="_blank" rel="noopener noreferrer"
+              <a href="/Diana_Opiyo_Resume_Final_Updated.pdf" target="_blank" rel="noopener noreferrer"
                 style={{ border: '1.5px solid #008a45', color: '#008a45', padding: '10px 22px', borderRadius: '999px', textDecoration: 'none', fontWeight: '800', fontSize: '0.88rem' }}
                 onMouseEnter={e => { e.target.style.backgroundColor = '#008a45'; e.target.style.color = '#fff'; }}
                 onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#008a45'; }}>
                 View Resume
               </a>
-              <a href="/Diana_Opiyo_Resume.pdf" download
+              <a href="/Diana_Opiyo_Resume_Final_Updated.pdf" download
                 style={{ border: '1.5px solid #4f8edc', color: '#4f8edc', padding: '10px 22px', borderRadius: '999px', textDecoration: 'none', fontWeight: '800', fontSize: '0.88rem' }}
                 onMouseEnter={e => { e.target.style.backgroundColor = '#4f8edc'; e.target.style.color = '#fff'; }}
                 onMouseLeave={e => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#4f8edc'; }}>
