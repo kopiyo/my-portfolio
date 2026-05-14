@@ -883,6 +883,7 @@ function App() {
             from training predictive models to deploying them as clinical screeners,
             NLP pipelines, and interactive web apps. My work spans the domains
             of <span style={{ color: '#00FFCC' }}>health informatics</span>,{' '}
+            <span style={{ color: '#00FFCC' }}>mental health</span>,{' '}
             <span style={{ color: '#00FFCC' }}>natural language processing</span>, and{' '}
             <span style={{ color: '#00FFCC' }}>educational equity</span>,
             and I care deeply about making data science accessible and impactful beyond the lab.
